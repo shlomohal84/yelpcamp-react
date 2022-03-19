@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 function Navbar({ pathname, isLoggedIn, toggleLogin }) {
   return pathname !== "/" ? (
     <nav
-      className={"navbar navbar-expand-md navbar-dark bg-success sticky-top"}
+      className={"navbar navbar-expand-lg navbar-dark bg-success sticky-top"}
     >
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/campgrounds">
+        <Link className="navbar-brand fw-bold fst-italic" to="/campgrounds">
           YelpCamp
         </Link>
         <button
@@ -23,22 +23,25 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className="nav-link text-white" to="/">
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/campgrounds">
+              <Link className="nav-link text-white" to="/campgrounds">
                 Campgrounds
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/campgrounds/new">
+              <Link className="nav-link text-white" to="/campgrounds/new">
                 New Campground
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/campgrounds/campground">
+              <Link
+                className="nav-link text-white"
+                to="/campgrounds/campground"
+              >
                 Campground Content
               </Link>
             </li>
@@ -48,25 +51,25 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
               <>
                 <li className="nav-item">
                   <Link
-                    onClick={() => toggleLogin(true)}
-                    className="nav-link"
+                    // onClick={() => toggleLogin(true)}
+                    className="nav-link text-white"
                     to="/login"
                   >
                     Login
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">
+                  <Link className="nav-link text-white" to="/register">
                     Register
                   </Link>
                 </li>
               </>
             )}
-            {isLoggedIn && (
+            {!isLoggedIn && (
               <li className="nav-item">
                 <Link
-                  onClick={() => toggleLogin(false)}
-                  className="nav-link "
+                  // onClick={() => toggleLogin(false)}
+                  className="nav-link text-white"
                   to="/campgrounds"
                 >
                   Logout

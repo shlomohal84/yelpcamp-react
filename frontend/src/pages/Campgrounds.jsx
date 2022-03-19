@@ -1,43 +1,51 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
-function Campgrounds() {
+import MapBox from "../components/MapBox";
+function Campgrounds({ campgrounds }) {
   return (
     <>
-      <div id="map"></div>
-      <h1>All Campgrounds</h1>
-      <div>
-        <a href="/campgrounds/new">Add Campground</a>
-      </div>
-      <ul>
-        {/* <% for(let elm of campgrounds){ %> */}
-        <div className="card mb-3">
-          <div className="row">
-            <div className="col-md-4">
-              {/* <%if (elm.images.length){ %> */}
-              <img className="img-fluid" src="#" alt="" />
-              {/* <% } else{%> */}
-              <img className="img-fluid" src="#" alt="" />
-              {/* <%} %> */}
-            </div>
-            <div className="col-md-8">
-              <div className="card-body">
-                <h5 className="card-title">{/*  <%=elm.title %> */} </h5>
-                <h5>{/* <{%=elm.properties.popUpMarkup %>} */}</h5>
-                <p className="card-text">{/* <%=elm.description %> */}</p>
-                <p className="card-text">
-                  <small className="text-muted">
-                    {/* <%=elm.location %> */}
-                  </small>
-                </p>
-                <a href="/" className="btn btn-primary">
-                  View {/* <%=elm.title %> */}
-                </a>
+      <MapBox lng={34.845452838230635} lat={32.32111744313199} zoom={10} />
+      <main className="container mt-5 ">
+        <h1>All Campgrounds</h1>
+        <div>
+          <Link to="/campgrounds/new">Add Campground</Link>
+        </div>
+        {campgrounds.map(campground => {
+          return (
+            <div className="card mb-3" key={campground._id}>
+              <div className="row">
+                <div className="col-md-4">
+                  <img
+                    className="img-fluid"
+                    src={
+                      campground.images.length ? campground.images[0].url : ""
+                    }
+                    alt={campground.title}
+                  />
+                </div>
+                <div className="col-md-8">
+                  <div className="card-body">
+                    <h5 className="card-title">{campground.title} </h5>
+                    <h5>{/* <{%=elm.properties.popUpMarkup %>} */}</h5>
+                    <p className="card-text">{campground.description}</p>
+                    <p className="card-text">
+                      <small className="text-muted">
+                        {campground.location}
+                      </small>
+                    </p>
+                    <Link
+                      to={`/campgrounds/${campground._id}`}
+                      className="btn btn-primary"
+                    >
+                      View {campground.title}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        {/* <% } %> */}
-      </ul>
+          );
+        })}
+      </main>
     </>
   );
 }

@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+// if (process.env.NODE_ENV !== "production") {
+require("dotenv").config();
+// }
 
 const express = require("express");
 const path = require("path");
@@ -48,10 +48,6 @@ const store = MongoStore.create({
   secret,
   touchAfter: 24 * 3600, // 3600 seconds => 60 minutes
 });
-
-// store.on('error', function (err) {
-// 	console.log("SESSION STORE ERROR",err)
-// })
 
 const sessionConfig = {
   store,

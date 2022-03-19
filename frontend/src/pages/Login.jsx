@@ -1,6 +1,7 @@
-import React from "react";
-
 function Login() {
+  const onSubmit = evt => {
+    evt.preventDefault();
+  };
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5">
       <div className="row">
@@ -17,7 +18,7 @@ function Login() {
                 action="/login"
                 method="POST"
                 className="validated-form"
-                noValidate
+                onSubmit={onSubmit}
               >
                 <div className="mb-3">
                   <label className="form-label" htmlFor="username">
@@ -46,7 +47,10 @@ function Login() {
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
-                <button className="btn btn-success btn-block w-100">
+                <button
+                  className="btn btn-success btn-block w-100"
+                  type="submit"
+                >
                   Login
                 </button>
               </form>
