@@ -7,25 +7,28 @@ mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 function MapBox({ lat, lng, zoom }) {
   //eslint-disable-next-line
-  const [mapBoxValues, setMapBoxValues] = useState({
-    lng,
-    lat,
-    zoom,
-  });
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (map.current) return; // initialize map only once
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [mapBoxValues.lng, mapBoxValues.lat],
-      zoom: mapBoxValues.zoom,
-    });
-  });
+    try {
+      if (map.current) return; // initialize map only once
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [lng, lat],
+        zoom: zoom,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [lat, lng, zoom]);
+
   return (
-    <div className="container-lg">
+    <div>
       <div ref={mapContainer} className="map-container" />
     </div>
   );

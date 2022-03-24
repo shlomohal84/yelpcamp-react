@@ -1,13 +1,5 @@
-import React from "react";
-import Footer from "../components/Footer";
-
 function Page(props) {
-  return (
-    <div>
-      {props.children}
-      <Footer />
-    </div>
-  );
+  return <div>{props.children}</div>;
 }
 
 export default Page;

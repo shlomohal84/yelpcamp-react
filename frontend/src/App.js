@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import Page from "./pages/Page";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -23,30 +24,20 @@ function App() {
   /* <== Hooks */
   const { pathname } = useLocation();
   const [appStates, setAppStates] = useState({ isLoggedIn: false });
-  const [campgrounds, setCampgrounds] = useState([]);
+  const [user, setUser] = useState({});
+  /* const [currentUser, setCurrentUser] =  */
+  /* <== Destructures */
+  const { isLoggedIn } = appStates;
+  /* Destructures ==> */
 
   useEffect(() => {
-    console.clear();
     async function getApi() {
-      try {
-        const response = await axios({
-          method: "GET",
-          url: "/campgrounds",
-        });
-        setCampgrounds(response.data);
-        console.log("API data loaded successfully");
-      } catch (error) {
-        setCampgrounds([]);
-        console.error(error);
-      }
+      const response = await axios.get("/");
+      setUser(response.data);
     }
     getApi();
   }, []);
   /* Hooks ==> */
-
-  /* <== Destructures */
-  const { isLoggedIn } = appStates;
-  /* Destructures ==> */
 
   /* <== Functions */
   const toggleLogin = state => {
@@ -63,7 +54,6 @@ function App() {
         toggleLogin={toggleLogin}
         //
       />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -72,7 +62,7 @@ function App() {
           path="/campgrounds"
           element={
             <Page>
-              <Campgrounds campgrounds={campgrounds} />
+              <Campgrounds />
             </Page>
           }
         />
@@ -86,6 +76,7 @@ function App() {
         />
         <Route path="/campgrounds/new" element={<NewCampground />} />
       </Routes>
+      <Footer pathname={pathname} />
     </div>
   );
 }

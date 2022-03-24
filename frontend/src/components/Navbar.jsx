@@ -51,7 +51,7 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
               <>
                 <li className="nav-item">
                   <Link
-                    // onClick={() => toggleLogin(true)}
+                    onClick={() => toggleLogin(true)}
                     className="nav-link text-white"
                     to="/login"
                   >
@@ -65,12 +65,12 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
                 </li>
               </>
             )}
-            {!isLoggedIn && (
+            {isLoggedIn && (
               <li className="nav-item">
                 <Link
-                  // onClick={() => toggleLogin(false)}
+                  onClick={() => toggleLogin(false)}
                   className="nav-link text-white"
-                  to="/campgrounds"
+                  to="/login"
                 >
                   Logout
                 </Link>

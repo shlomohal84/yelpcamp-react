@@ -6,7 +6,7 @@ function NewCampground() {
       <h1 className="text-center">New Campground</h1>
       <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
         <form
-          action="/campgrounds"
+          action="/campgrounds/new"
           method="POST"
           noValidate
           className="validated-form"

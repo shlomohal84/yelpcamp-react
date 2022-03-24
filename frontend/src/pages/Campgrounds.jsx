@@ -1,7 +1,35 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import MapBox from "../components/MapBox";
-function Campgrounds({ campgrounds }) {
+function Campgrounds() {
+  useEffect(() => {
+    console.clear();
+    async function getApi() {
+      try {
+        const response = await axios({
+          method: "GET",
+          url: "/campgrounds",
+        });
+        setCampgrounds(response.data);
+        console.log("API data fetched successfully");
+      } catch (error) {
+        setCampgrounds([]);
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getApi();
+  }, []);
+  const [campgrounds, setCampgrounds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  if (loading) {
+    return <p>loading</p>;
+  }
+  console.log(campgrounds[0].reviews);
+
   return (
     <>
       <MapBox lng={34.845452838230635} lat={32.32111744313199} zoom={10} />
