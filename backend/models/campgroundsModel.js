@@ -7,42 +7,45 @@ const ImageSchema = new Schema({
   filename: String,
 });
 
-const CampgroundSchema = new Schema({
-  title: String,
-  location: String,
-  description: String,
-  price: Number,
-  images: [ImageSchema],
-  geometry: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
+const CampgroundSchema = new Schema(
+  {
+    title: String,
+    location: String,
+    description: String,
+    price: Number,
+    images: [ImageSchema],
+    geometry: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
-  reviews: [
-    {
+    author: {
       type: Schema.Types.ObjectId,
-      ref: "Review",
+      ref: "User",
     },
-  ],
-  createdAt: {
-    type: Date,
-    immutable: true,
-    default: () => Date.now(),
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    // createdAt: {
+    //   type: Date,
+    //   immutable: true,
+    //   default: () => Date.now(),
+    // },
+    // updatedAt: {
+    //   type: Date,
+    //   default: () => Date.now(),
+    // },
   },
-  updatedAt: {
-    type: Date,
-    default: () => Date.now(),
-  },
-});
+  { timestamps: true }
+);
 
 module.exports = model("Campground", CampgroundSchema);

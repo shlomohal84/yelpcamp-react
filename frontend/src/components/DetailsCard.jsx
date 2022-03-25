@@ -1,5 +1,3 @@
-import React from "react";
-
 function DetailsCard({ campground }) {
   return (
     <div className="card mb-3">
@@ -30,9 +28,15 @@ function DetailsCard({ campground }) {
         </form>
       </div>
       <div className="card-footer">
-        Posted on:
+        <span className="col-3">Posted At: </span>
         <span className="text-muted">
           {` ${new Date(campground.createdAt).toLocaleString("en-gb")}`}
+        </span>
+      </div>
+      <div className="card-footer flex-row">
+        <span className="col-3">Updated At: </span>
+        <span className="text-muted">
+          {`${new Date(campground.updatedAt).toLocaleString("en-gb")}`}
         </span>
       </div>
     </div>

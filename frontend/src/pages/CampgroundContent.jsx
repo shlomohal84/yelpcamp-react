@@ -34,11 +34,11 @@ function CampgroundContent() {
 
   return (
     <div className="row">
-      <div className="col-6">
+      <div className="col-6 pe-1">
         <CampgroundCarousel campground={campground} />
         <DetailsCard campground={campground} />
       </div>
-      <div className="col-6">
+      <div className="col-6 ps-1">
         {loading ? null : (
           <MapBox
             lng={coordinates[0]}
