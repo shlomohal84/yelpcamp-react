@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 
 import Page from "./pages/Page";
 import Navbar from "./components/Navbar";
@@ -23,29 +23,32 @@ import "./App.css";
 function App() {
   /* <== Hooks */
   const { pathname } = useLocation();
-  const [appStates, setAppStates] = useState({ isLoggedIn: false });
-  const [user, setUser] = useState({});
-  /* const [currentUser, setCurrentUser] =  */
-  /* <== Destructures */
-  const { isLoggedIn } = appStates;
-  /* Destructures ==> */
+  const [state, setState] = useState({
+    isLoggedIn: false,
+    currentUser: null,
+    loading: true,
+  });
+  const { isLoggedIn, currentUser, loading } = state;
 
   useEffect(() => {
-    async function getApi() {
-      const response = await axios.get("/");
-      setUser(response.data);
-    }
-    getApi();
+    setState(prevState => ({ ...prevState, loading: false }));
   }, []);
+
   /* Hooks ==> */
 
   /* <== Functions */
-  const toggleLogin = state => {
-    setAppStates({ ...appStates, isLoggedIn: state });
+  const toggleLogin = (username, loginStatus) => {
+    setState(prevState => ({
+      ...prevState,
+      isLoggedIn: loginStatus,
+      currentUser: username,
+    }));
   };
 
   /* Functions ==> */
-
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div className={`${pathname === "/" ? "App-root" : "App"}`}>
       <Navbar
@@ -57,7 +60,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <Login
+              currentUser={currentUser}
+              isLoggedIn={isLoggedIn}
+              toggleLogin={toggleLogin}
+            />
+          }
+        />
         <Route
           path="/campgrounds"
           element={
@@ -70,7 +82,7 @@ function App() {
           path="/campgrounds/:id"
           element={
             <Page>
-              <CampgroundContent />
+              <CampgroundContent currentUser={currentUser} />
             </Page>
           }
         />

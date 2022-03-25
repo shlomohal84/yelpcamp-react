@@ -1,4 +1,4 @@
-function DetailsCard({ campground }) {
+function DetailsCard({ campground, currentUser }) {
   return (
     <div className="card mb-3">
       <div className="card-body">
@@ -12,21 +12,23 @@ function DetailsCard({ campground }) {
         <li className="list-group-item text-muted">{campground.location}</li>
         <li className="list-group-item">{`$${campground.price}/night`}</li>
       </ul>
-      <div className="card-body">
-        <a
-          href="/campgrounds/<%=campground._id %>/edit"
-          className="card-link btn btn-info"
-        >
-          Edit
-        </a>
-        <form
-          className="d-inline"
-          action="/campgrounds/<%=campground._id%>?_method=DELETE"
-          method="POST"
-        >
-          <button className="btn btn-danger">Delete</button>
-        </form>
-      </div>
+      {currentUser && currentUser.id === campground.author._id && (
+        <div className="card-body">
+          <a
+            href="/campgrounds/<%=campground._id %>/edit"
+            className="card-link btn btn-info"
+          >
+            Edit
+          </a>
+          <form
+            className="d-inline"
+            action="/campgrounds/<%=campground._id%>?_method=DELETE"
+            method="POST"
+          >
+            <button className="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      )}
       <div className="card-footer">
         <span className="col-3">Posted At: </span>
         <span className="text-muted">

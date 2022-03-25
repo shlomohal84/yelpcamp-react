@@ -1,7 +1,40 @@
-function Login() {
-  const onSubmit = evt => {
-    evt.preventDefault();
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+function Login({ user, isLoggedIn, toggleLogin }) {
+  const [state, setState] = useState({
+    currentUser: "",
+    username: "",
+    password: "",
+  });
+  const { username, password, currentUser } = state;
+  const navigate = useNavigate();
+  const handleInputChange = evt => {
+    setState(prevState => ({
+      ...prevState,
+      [evt.target.name]: evt.target.value,
+    }));
   };
+
+  const onSubmit = async evt => {
+    evt.preventDefault();
+    try {
+      const response = await axios.post("/login", { username, password });
+      setState(prevState => ({
+        ...prevState,
+        currentUser: {
+          username: response.data.username,
+          id: response.data._id,
+        },
+      }));
+      console.log(response);
+      toggleLogin({ ...currentUser }, true);
+      //  navigate("/campgrounds");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5">
       <div className="row">
@@ -25,11 +58,13 @@ function Login() {
                     Username
                   </label>
                   <input
+                    onChange={handleInputChange}
+                    value={username}
                     className="form-control"
                     type="text"
                     id="username"
                     name="username"
-                    required
+                    // required
                     autoFocus
                   />
                   <div className="valid-feedback">Looks good!</div>
@@ -39,11 +74,13 @@ function Login() {
                     Password
                   </label>
                   <input
+                    onChange={handleInputChange}
+                    value={password}
                     className="form-control"
                     type="password"
                     id="password"
                     name="password"
-                    required
+                    // required
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>

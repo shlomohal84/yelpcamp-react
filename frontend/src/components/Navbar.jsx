@@ -37,21 +37,13 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
                 New Campground
               </Link>
             </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link text-white"
-                to="/campgrounds/campground"
-              >
-                Campground Content
-              </Link>
-            </li>
           </ul>
           <ul className="navbar-nav ms-auto">
             {!isLoggedIn && (
               <>
                 <li className="nav-item">
                   <Link
-                    onClick={() => toggleLogin(true)}
+                    // onClick={() => toggleLogin(true)}
                     className="nav-link text-white"
                     to="/login"
                   >
@@ -68,7 +60,7 @@ function Navbar({ pathname, isLoggedIn, toggleLogin }) {
             {isLoggedIn && (
               <li className="nav-item">
                 <Link
-                  onClick={() => toggleLogin(false)}
+                  // onClick={() => toggleLogin(false)}
                   className="nav-link text-white"
                   to="/login"
                 >

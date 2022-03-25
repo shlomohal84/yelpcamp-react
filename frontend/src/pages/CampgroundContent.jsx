@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { /* Link, */ useParams } from "react-router-dom";
 import axios from "axios";
 
 import CampgroundCarousel from "../components/CampgroundCarousel";
@@ -7,7 +7,7 @@ import DetailsCard from "../components/DetailsCard";
 import Reviews from "../components/Reviews";
 import MapBox from "../components/MapBox";
 
-function CampgroundContent() {
+function CampgroundContent({ currentUser }) {
   const [campground, setCampground] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
@@ -36,7 +36,7 @@ function CampgroundContent() {
     <div className="row">
       <div className="col-6 pe-1">
         <CampgroundCarousel campground={campground} />
-        <DetailsCard campground={campground} />
+        <DetailsCard campground={campground} currentUser={currentUser} />
       </div>
       <div className="col-6 ps-1">
         {loading ? null : (
@@ -47,7 +47,7 @@ function CampgroundContent() {
             campground={campground}
           />
         )}
-        <Reviews campground={campground} />
+        <Reviews campground={campground} currentUser={currentUser} />
       </div>
     </div>
   );

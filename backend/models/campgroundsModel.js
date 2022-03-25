@@ -35,17 +35,10 @@ const CampgroundSchema = new Schema(
         ref: "Review",
       },
     ],
-    // createdAt: {
-    //   type: Date,
-    //   immutable: true,
-    //   default: () => Date.now(),
-    // },
-    // updatedAt: {
-    //   type: Date,
-    //   default: () => Date.now(),
-    // },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = model("Campground", CampgroundSchema);
