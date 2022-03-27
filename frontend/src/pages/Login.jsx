@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 function Login({ user, isLoggedIn, toggleLogin }) {
   const [state, setState] = useState({
-    currentUser: "",
     username: "",
     password: "",
   });
@@ -19,16 +18,15 @@ function Login({ user, isLoggedIn, toggleLogin }) {
   const onSubmit = async evt => {
     evt.preventDefault();
     try {
-      const response = await axios.post("/login", { username, password });
-      setState(prevState => ({
-        ...prevState,
-        currentUser: {
-          username: response.data.username,
-          id: response.data._id,
-        },
-      }));
-      console.log(response);
-      toggleLogin({ ...currentUser }, true);
+      const response = await axios.post("/login", {
+        username,
+        password,
+      });
+      console.log(response.data.username, response.data._id);
+      toggleLogin(true, {
+        username: response.data.username,
+        id: response.data._id,
+      });
       //  navigate("/campgrounds");
     } catch (error) {
       console.log(error);
@@ -36,7 +34,7 @@ function Login({ user, isLoggedIn, toggleLogin }) {
   };
 
   return (
-    <div className="Login container d-flex justify-content-center align-items-center mt-5">
+    <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
         <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
           <div className="card shadow">

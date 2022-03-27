@@ -1,22 +1,40 @@
 const UsersModel = require("../models/usersModel");
+const bcrypt = require("bcrypt");
 
-module.exports.getUsers = async (req, res, next) => {
-  const user = await UsersModel.findById(req.body._id);
-  console.log(req.body._id);
-  res.json(user);
+// module.exports.getUsers = async (req, res) => {
+//   const user = await UsersModel.findById(req.body._id);
+//   console.log(req.body._id);
+//   res.json(user);
+// };
+
+module.exports.register = async (req, res) => {
+  //create a new user
+  const newUser = new UsersModel({
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+  });
+  // save user to db
+  await newUser.save(function (err) {
+    if (err) throw err;
+    console.log("Registered Successfuly!");
+  });
+  res.send(`${req.body.username} registered Successfuly!`);
 };
 
-module.exports.login = async (req, res, next) => {
-  const user = await UsersModel.findOne();
-  // console.log(req.body);
-  // console.log(user);
-  if (
-    req.body.username === user.username &&
-    req.body.password === user.password
-  ) {
-    console.log("Login Success!");
-    return res.status(200).json(user);
-  }
-  console.log("Login Failed");
-  return res.status(500).json("Login Failed");
+module.exports.login = async (req, res) => {
+  //fetch user and test password verification
+  UsersModel.findOne({ username: req.body.username }, function (err, user) {
+    if (err) throw err;
+    //test matching password
+    user.comparePassword(req.body.password, function (err, isMatch) {
+      if (err) throw err;
+      isMatch
+        ? console.log("Logged in successfully!")
+        : console.log("Incorrect username or password");
+      return isMatch
+        ? res.send("Logged in successfully!")
+        : res.send("Incorrect username or password");
+    });
+  });
 };

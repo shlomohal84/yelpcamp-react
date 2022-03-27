@@ -37,11 +37,11 @@ function App() {
   /* Hooks ==> */
 
   /* <== Functions */
-  const toggleLogin = (username, loginStatus) => {
+  const toggleLogin = (loginStatus, user) => {
     setState(prevState => ({
       ...prevState,
       isLoggedIn: loginStatus,
-      currentUser: username,
+      currentUser: user,
     }));
   };
 
@@ -50,7 +50,7 @@ function App() {
     return <h1>Loading...</h1>;
   }
   return (
-    <div className={`${pathname === "/" ? "App-root" : "App"}`}>
+    <div className="App">
       <Navbar
         pathname={pathname}
         isLoggedIn={isLoggedIn}
@@ -82,7 +82,10 @@ function App() {
           path="/campgrounds/:id"
           element={
             <Page>
-              <CampgroundContent currentUser={currentUser} />
+              <CampgroundContent
+                currentUser={currentUser}
+                isLoggedIn={isLoggedIn}
+              />
             </Page>
           }
         />

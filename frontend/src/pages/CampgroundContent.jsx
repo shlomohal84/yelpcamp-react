@@ -7,7 +7,7 @@ import DetailsCard from "../components/DetailsCard";
 import Reviews from "../components/Reviews";
 import MapBox from "../components/MapBox";
 
-function CampgroundContent({ currentUser }) {
+function CampgroundContent({ currentUser, isLoggedIn }) {
   const [campground, setCampground] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
@@ -36,7 +36,11 @@ function CampgroundContent({ currentUser }) {
     <div className="row">
       <div className="col-6 pe-1">
         <CampgroundCarousel campground={campground} />
-        <DetailsCard campground={campground} currentUser={currentUser} />
+        <DetailsCard
+          campground={campground}
+          currentUser={currentUser}
+          isLoggedIn={isLoggedIn}
+        />
       </div>
       <div className="col-6 ps-1">
         {loading ? null : (

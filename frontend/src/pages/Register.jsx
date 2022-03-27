@@ -2,7 +2,7 @@ import React from "react";
 
 function Register() {
   return (
-    <div className="Register container d-flex justify-content-center align-items-center mt-5">
+    <div className="Register container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
         <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
           <div className="card shadow">

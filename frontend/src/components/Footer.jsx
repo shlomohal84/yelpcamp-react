@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-function Footer() {
-  return (
-    <footer className="footer bg-dark py-3 mt-auto">
+function Footer({ pathname }) {
+  return pathname !== "/" ? (
+    <footer className="footer bg-success text-white py-3 mt-auto">
       <div className="container">
         <div className="row">
-          <div className="mx-auto w-auto">
-            <span className="text-muted">&copy; YelpCamp 2022</span>
+          <div className="flex-direction-row d-flex justify-content-center">
+            <div className="me-2">&copy; YelpCamp 2022 </div>
             <a as={Link} href="#">
               <FontAwesomeIcon
                 className="badge bg-secondary fs-7"
@@ -19,7 +19,7 @@ function Footer() {
         </div>
       </div>
     </footer>
-  );
+  ) : null;
 }
 
 export default Footer;

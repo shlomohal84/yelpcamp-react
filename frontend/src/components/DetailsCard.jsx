@@ -1,4 +1,6 @@
-function DetailsCard({ campground, currentUser }) {
+import { Link } from "react-router-dom";
+
+function DetailsCard({ campground, currentUser, isLoggedIn }) {
   return (
     <div className="card mb-3">
       <div className="card-body">
@@ -14,19 +16,21 @@ function DetailsCard({ campground, currentUser }) {
       </ul>
       {currentUser && currentUser.id === campground.author._id && (
         <div className="card-body">
-          <a
-            href="/campgrounds/<%=campground._id %>/edit"
+          <Link
+            to="/campgrounds/<%=campground._id %>/edit"
             className="card-link btn btn-info"
           >
             Edit
-          </a>
-          <form
-            className="d-inline"
-            action="/campgrounds/<%=campground._id%>?_method=DELETE"
-            method="POST"
-          >
-            <button className="btn btn-danger">Delete</button>
-          </form>
+          </Link>
+          {(currentUser || isLoggedIn) && (
+            <form
+              className="d-inline"
+              action="/campgrounds/<%=campground._id%>?_method=DELETE"
+              method="POST"
+            >
+              <button className="btn btn-danger">Delete</button>
+            </form>
+          )}
         </div>
       )}
       <div className="card-footer">

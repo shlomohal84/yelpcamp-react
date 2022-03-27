@@ -13,7 +13,6 @@ function Campgrounds() {
           url: "/campgrounds",
         });
         setCampgrounds(response.data);
-        console.log("API data fetched successfully");
       } catch (error) {
         setCampgrounds([]);
         console.error(error);
@@ -28,7 +27,6 @@ function Campgrounds() {
   if (loading) {
     return <p>loading</p>;
   }
-  console.log(campgrounds[0].reviews);
 
   return (
     <>
