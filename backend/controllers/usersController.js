@@ -29,12 +29,12 @@ module.exports.login = async (req, res) => {
     //test matching password
     user.comparePassword(req.body.password, function (err, isMatch) {
       if (err) throw err;
-      isMatch
-        ? console.log("Logged in successfully!")
-        : console.log("Incorrect username or password");
-      return isMatch
-        ? res.send("Logged in successfully!")
-        : res.send("Incorrect username or password");
+      if (!isMatch) {
+        console.log("Incorrect username or password");
+        return res.send("Incorrect username or password");
+      }
+      console.log("Logged in successfully!");
+      return res.send("Logged in successfully!");
     });
   });
 };
