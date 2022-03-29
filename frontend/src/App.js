@@ -11,6 +11,8 @@ import Login from "./pages/Login";
 import Campgrounds from "./pages/Campgrounds";
 import NewCampground from "./pages/NewCampground";
 import CampgroundContent from "./pages/CampgroundContent";
+import EditCampground from "./pages/EditCampground";
+
 /*==>STYLES IMPORTS */
 //eslint-disable-next-line
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
@@ -24,14 +26,18 @@ function App() {
   /* <== Hooks */
   const { pathname } = useLocation();
   const [state, setState] = useState({
-    isLoggedIn: false,
+    isLoggedIn: null,
     currentUser: null,
     loading: true,
   });
   const { isLoggedIn, currentUser, loading } = state;
 
   useEffect(() => {
-    setState(prevState => ({ ...prevState, loading: false }));
+    setState(prevState => ({
+      ...prevState,
+      loading: false,
+      currentCampgroundId: "",
+    }));
   }, []);
 
   /* Hooks ==> */
@@ -53,28 +59,37 @@ function App() {
     <div className="App">
       <Navbar
         pathname={pathname}
-        isLoggedIn={isLoggedIn}
         toggleLogin={toggleLogin}
+        isLoggedIn={isLoggedIn}
         //
       />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={
+            <Page>
+              <Register />
+            </Page>
+          }
+        />
         <Route
           path="/login"
           element={
-            <Login
-              currentUser={currentUser}
-              isLoggedIn={isLoggedIn}
-              toggleLogin={toggleLogin}
-            />
+            <Page>
+              <Login
+                currentUser={currentUser}
+                isLoggedIn={isLoggedIn}
+                toggleLogin={toggleLogin}
+              />
+            </Page>
           }
         />
         <Route
           path="/campgrounds"
           element={
             <Page>
-              <Campgrounds />
+              <Campgrounds isLoggedIn={isLoggedIn} />
             </Page>
           }
         />
@@ -89,7 +104,22 @@ function App() {
             </Page>
           }
         />
-        <Route path="/campgrounds/new" element={<NewCampground />} />
+        <Route
+          path="/campgrounds/:id/edit"
+          element={
+            <Page>
+              <EditCampground />
+            </Page>
+          }
+        />
+        <Route
+          path="/campgrounds/new"
+          element={
+            <Page>
+              <NewCampground currentUser={currentUser} />
+            </Page>
+          }
+        />
       </Routes>
       <Footer pathname={pathname} />
     </div>

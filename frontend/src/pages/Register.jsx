@@ -1,6 +1,27 @@
-import React from "react";
-
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 function Register() {
+  const [state, setState] = useState({
+    username: "",
+    password: "",
+    email: "",
+  });
+  const { username, password, email } = state;
+
+  const handleInputChange = evt => {
+    setState(prevState => ({
+      ...prevState,
+      [evt.target.name]: evt.target.value,
+    }));
+  };
+  const navigate = useNavigate();
+  const handleRegistration = async evt => {
+    evt.preventDefault(evt);
+    const response = await axios.post("/register", { ...state });
+    console.log(response);
+    if (response.data.registerStatus) return navigate("/campgrounds");
+  };
   return (
     <div className="Register container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
@@ -18,6 +39,7 @@ function Register() {
                 method="POST"
                 className="validated-form"
                 noValidate
+                onSubmit={handleRegistration}
               >
                 <div className="mb-3">
                   <label className="form-label" htmlFor="username">
@@ -30,6 +52,8 @@ function Register() {
                     name="username"
                     required
                     autoFocus
+                    value={username}
+                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
@@ -43,6 +67,8 @@ function Register() {
                     id="email"
                     name="email"
                     required
+                    value={email}
+                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
@@ -56,6 +82,8 @@ function Register() {
                     id="password"
                     name="password"
                     required
+                    value={password}
+                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>

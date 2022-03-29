@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import MapBox from "../components/MapBox";
-function Campgrounds() {
+function Campgrounds({ isLoggedIn }) {
   useEffect(() => {
-    console.clear();
     async function getApi() {
       try {
         const response = await axios({
@@ -34,7 +33,9 @@ function Campgrounds() {
       <main className="container mt-5 ">
         <h1>All Campgrounds</h1>
         <div>
-          <Link to="/campgrounds/new">Add Campground</Link>
+          <Link to={isLoggedIn ? "/campgrounds/new" : "/login"}>
+            Add Campground
+          </Link>
         </div>
         {campgrounds.map(campground => {
           return (

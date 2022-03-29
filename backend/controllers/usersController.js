@@ -19,7 +19,7 @@ module.exports.register = async (req, res) => {
     if (err) throw err;
     console.log("Registered Successfuly!");
   });
-  res.send(`${req.body.username} registered Successfuly!`);
+  res.json({ message: "Registered Successfuly!", registerStatus: true });
 };
 
 module.exports.login = async (req, res) => {
@@ -30,11 +30,17 @@ module.exports.login = async (req, res) => {
     user.comparePassword(req.body.password, function (err, isMatch) {
       if (err) throw err;
       if (!isMatch) {
-        console.log("Incorrect username or password");
-        return res.send("Incorrect username or password");
+        return res.json({
+          loginStatus: isMatch,
+          message: "Incorrect username or password",
+        });
       }
-      console.log("Logged in successfully!");
-      return res.send("Logged in successfully!");
+      return res.json({
+        username: user.username,
+        id: user._id,
+        loginStatus: isMatch,
+        message: "Logged in successfully!",
+      });
     });
   });
 };

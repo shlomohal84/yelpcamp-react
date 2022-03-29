@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function Navbar({ pathname, isLoggedIn, toggleLogin }) {
+function Navbar({ pathname, isLoggedIn }) {
   return pathname !== "/" ? (
     <nav
       className={"navbar navbar-expand-lg navbar-dark bg-success sticky-top"}

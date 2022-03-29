@@ -17,7 +17,7 @@ function DetailsCard({ campground, currentUser, isLoggedIn }) {
       {currentUser && currentUser.id === campground.author._id && (
         <div className="card-body">
           <Link
-            to="/campgrounds/<%=campground._id %>/edit"
+            to={`/campgrounds/${campground._id}/edit`}
             className="card-link btn btn-info"
           >
             Edit

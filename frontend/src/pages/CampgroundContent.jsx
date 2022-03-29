@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { /* Link, */ useParams } from "react-router-dom";
+import { useParams /* useLocation */ } from "react-router-dom";
 import axios from "axios";
 
 import CampgroundCarousel from "../components/CampgroundCarousel";
@@ -11,9 +11,8 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
   const [campground, setCampground] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-
+  // const { pathname } = useLocation();
   useEffect(() => {
-    console.clear();
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
@@ -29,7 +28,6 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
   if (loading) {
     return <h1>Loading...</h1>;
   }
-
   const { coordinates } = campground.geometry;
 
   return (
@@ -51,7 +49,11 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
             campground={campground}
           />
         )}
-        <Reviews campground={campground} currentUser={currentUser} />
+        <Reviews
+          campground={campground}
+          currentUser={currentUser}
+          isLoggedIn={isLoggedIn}
+        />
       </div>
     </div>
   );

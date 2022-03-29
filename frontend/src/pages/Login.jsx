@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-function Login({ user, isLoggedIn, toggleLogin }) {
+function Login({ toggleLogin }) {
   const [state, setState] = useState({
     username: "",
     password: "",
   });
-  const { username, password, currentUser } = state;
+  const { username, password } = state;
   const navigate = useNavigate();
   const handleInputChange = evt => {
     setState(prevState => ({
@@ -22,17 +22,20 @@ function Login({ user, isLoggedIn, toggleLogin }) {
         username,
         password,
       });
-      console.log(response.data.username, response.data._id);
-      toggleLogin(true, {
+      if (!response.data.loginStatus) {
+        console.log(response.data);
+        return toggleLogin(false, {});
+      }
+      toggleLogin(response.data.loginStatus, {
         username: response.data.username,
-        id: response.data._id,
+        id: response.data.id,
       });
-      //  navigate("/campgrounds");
+      console.log(response.data);
+      navigate("/campgrounds");
     } catch (error) {
       console.log(error);
     }
   };
-
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
@@ -62,8 +65,8 @@ function Login({ user, isLoggedIn, toggleLogin }) {
                     type="text"
                     id="username"
                     name="username"
-                    // required
                     autoFocus
+                    required
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
@@ -78,7 +81,7 @@ function Login({ user, isLoggedIn, toggleLogin }) {
                     type="password"
                     id="password"
                     name="password"
-                    // required
+                    required
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>

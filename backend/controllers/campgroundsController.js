@@ -22,8 +22,20 @@ module.exports.campgroundContent = async (req, res) => {
 
 module.exports.createCampground = async (req, res) => {
   const campground = new CampgroundsModel(req.body.campground);
-  // campground.author = req.user._id;
-  console.log(req.body.campground);
+  console.log(req.body);
   await campground.save();
+  res.json(campground);
+};
+
+module.exports.editCampground = async (req, res) => {
+  const { title, location, price, description, images } = req.body;
+  const campground = await CampgroundsModel.findByIdAndUpdate(
+    req.params.id,
+    { title, location, price, description, images },
+    { new: true }
+  );
+  await campground.save();
+  console.log(campground);
+  // console.log(req.body);
   res.json(campground);
 };

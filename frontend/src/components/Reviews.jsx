@@ -1,20 +1,15 @@
 import { useState } from "react";
-function Reviews({ campground, currentUser }) {
+
+function Reviews({ campground, currentUser, isLoggedIn }) {
   const [state, setState] = useState({ rating: 1 });
   const { rating } = state;
   const handleRating = evt => {
     setState(prevState => ({ ...prevState, rating: Number(evt.target.value) }));
   };
 
-  // const handleInputChange = evt => {
-  //   set;
-  // };
-
-  // console.log(rating);
-  // console.log(campground.reviews[0]);
   return (
     <>
-      {currentUser && (
+      {isLoggedIn && (
         <>
           <h2>Leave a review</h2>
           <form

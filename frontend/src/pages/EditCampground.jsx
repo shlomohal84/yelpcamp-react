@@ -1,18 +1,50 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 
-function NewCampground({ currentUser }) {
-  const navigate = useNavigate();
+function EditCampground({ currentUser, currentCampgroundId }) {
+  const { pathname } = useLocation();
+  const params = useParams();
   const [state, setState] = useState({
     title: "",
     location: "",
     price: 0,
     description: "",
     images: [],
+    loading: true,
+    campground: null,
   });
+  const { title, location, price, description, images, loading } = state;
 
-  const { title, location, price, description, images } = state;
+  useEffect(() => {
+    // console.log(currentPath);
+    async function getApi() {
+      try {
+        const response = await axios.get(`/campgrounds/${params.id}`);
+        let { title, location, price, description } = response.data;
+        setState(prevState => ({
+          ...prevState,
+          campground: response.data,
+          title: title,
+          location: location,
+          price: price,
+          description: description,
+          images: [
+            {
+              url: "https://res.cloudinary.com/snackeater/image/upload/v1648143343/YelpCamp/IMG_20210530_232316_fapoqk.jpg",
+              filename: "angels",
+            },
+          ],
+        }));
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setState(prevState => ({ ...prevState, loading: false }));
+      }
+    }
+    getApi();
+  }, [currentCampgroundId, pathname, params.id]);
+
   const handleInputChange = evt => {
     setState(prevState => ({
       ...prevState,
@@ -22,25 +54,26 @@ function NewCampground({ currentUser }) {
 
   const handleSubmit = async evt => {
     evt.preventDefault();
-    const response = await axios.post("/campgrounds/new", {
-      campground: {
-        ...state,
-        geometry: {
-          type: "Point",
-        },
-        author: currentUser.id,
-      },
+    const response = await axios.put(pathname, {
+      title,
+      location,
+      price,
+      description,
+      images,
+      loading,
     });
-    navigate("/campgrounds");
-    console.log(response);
+    console.log(response.data);
   };
 
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div className="row">
-      <h1 className="text-center">New Campground</h1>
+      <h1 className="text-center">Edit Campground</h1>
       <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
         <form
-          action="/campgrounds/new"
+          action={`/campgrounds/${currentCampgroundId}/edit`}
           method="POST"
           className="validated-form"
           encType="multipart/form-data"
@@ -125,12 +158,12 @@ function NewCampground({ currentUser }) {
               name="images"
               id="image"
               multiple
-              value={images}
-              onChange={handleInputChange}
+              // value={images}
+              // onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <button className="btn btn-success">Add Campground</button>
+            <button className="btn btn-success">Edit Campground</button>
           </div>
         </form>
         <footer>
@@ -141,4 +174,4 @@ function NewCampground({ currentUser }) {
   );
 }
 
-export default NewCampground;
+export default EditCampground;
