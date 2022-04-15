@@ -5,15 +5,7 @@ import axios from "axios";
 function EditCampground({ currentUser, currentCampgroundId }) {
   const { pathname } = useLocation();
   const params = useParams();
-  const [state, setState] = useState({
-    title: "",
-    location: "",
-    price: 0,
-    description: "",
-    images: [],
-    loading: true,
-    campground: null,
-  });
+  const [state, setState] = useState({ files: null });
   const { title, location, price, description, images, loading } = state;
 
   useEffect(() => {
@@ -52,6 +44,10 @@ function EditCampground({ currentUser, currentCampgroundId }) {
     }));
   };
 
+  const handleFileInputChange = evt => {
+    setState(prevState => ({ ...prevState, images: evt.target.files[0] }));
+  };
+
   const handleSubmit = async evt => {
     evt.preventDefault();
     const response = await axios.put(pathname, {
@@ -71,7 +67,7 @@ function EditCampground({ currentUser, currentCampgroundId }) {
   return (
     <div className="row">
       <h1 className="text-center">Edit Campground</h1>
-      <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+      <div className="col-md-6 offset-md-3 col-xl-6">
         <form
           action={`/campgrounds/${currentCampgroundId}/edit`}
           method="POST"
@@ -156,10 +152,10 @@ function EditCampground({ currentUser, currentCampgroundId }) {
               className="form-control"
               type="file"
               name="images"
-              id="image"
+              id="images"
               multiple
-              // value={images}
-              // onChange={handleInputChange}
+              required
+              onChange={handleFileInputChange}
             />
           </div>
           <div className="mb-3">

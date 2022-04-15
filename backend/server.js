@@ -1,14 +1,14 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const connectDB = require("./config/db");
 const colors = require("colors");
 const secret = process.env.SECRET || "thisshouldbeabettersecret";
-
 const campgroundsRoutes = require("./routes/campgroundsRoutes");
 const reviewsRoutes = require("./routes/reviewsRoutes");
 const usersRoutes = require("./routes/usersRoutes");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

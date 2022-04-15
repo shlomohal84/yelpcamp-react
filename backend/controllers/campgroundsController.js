@@ -1,4 +1,7 @@
 const CampgroundsModel = require("../models/campgroundsModel");
+const mapBoxToken = process.env.REACT_APP_MAPBOX_TOKEN;
+const geo = require("mapbox-geocoding");
+geo.setAccessToken(mapBoxToken);
 
 module.exports.index = async (req, res) => {
   const campgrounds = await CampgroundsModel.find()
@@ -21,10 +24,22 @@ module.exports.campgroundContent = async (req, res) => {
 };
 
 module.exports.createCampground = async (req, res) => {
-  const campground = new CampgroundsModel(req.body.campground);
-  console.log(req.body);
-  await campground.save();
-  res.json(campground);
+  geoDataCoords = geo.geocode(
+    "mapbox.places",
+    req.body.campground.location,
+    async (err, data) => {
+      if (err || !data.features[0]) {
+        console.error(err);
+        return res.json(err);
+      }
+      if (data) {
+        const campground = await new CampgroundsModel(req.body.campground);
+        campground.geometry = data.features[0].geometry;
+        await campground.save();
+        res.json(campground);
+      }
+    }
+  );
 };
 
 module.exports.editCampground = async (req, res) => {
@@ -35,7 +50,6 @@ module.exports.editCampground = async (req, res) => {
     { new: true }
   );
   await campground.save();
-  console.log(campground);
   // console.log(req.body);
   res.json(campground);
 };

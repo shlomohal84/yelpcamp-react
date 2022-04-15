@@ -12,7 +12,6 @@ import Campgrounds from "./pages/Campgrounds";
 import NewCampground from "./pages/NewCampground";
 import CampgroundContent from "./pages/CampgroundContent";
 import EditCampground from "./pages/EditCampground";
-
 /*==>STYLES IMPORTS */
 //eslint-disable-next-line
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle";

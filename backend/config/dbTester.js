@@ -13,15 +13,18 @@ mongoose.connect(
   error => console.log(error)
 );
 async function run() {
-  bcrypt.hash("1234", 10, async function (err, hash) {
-    const update = await UsersModel.updateOne(
-      { _id: "623dfccc3e257184e8e97b10" },
-      {
-        $set: { "hash": hash },
-      }
-    );
-    console.log(update);
-  });
+  await CampgroundsModel.findByIdAndDelete("6259c1f015e2b912d4f939b5");
+  mongoose.connection.close();
+
+  // bcrypt.hash("1234", 10, async function (err, hash) {
+  //   const update = await UsersModel.updateOne(
+  //     { _id: "623dfccc3e257184e8e97b10" },
+  //     {
+  //       $set: { "hash": hash },
+  //     }
+  //   );
+  //   console.log(update);
+  // });
 }
 
 run();

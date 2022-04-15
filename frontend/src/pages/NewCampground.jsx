@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
 
 function NewCampground({ currentUser }) {
@@ -7,12 +8,13 @@ function NewCampground({ currentUser }) {
   const [state, setState] = useState({
     title: "",
     location: "",
-    price: 0,
+    price: "",
     description: "",
-    images: [],
+    file: "",
+    validated: false,
   });
 
-  const { title, location, price, description, images } = state;
+  const { title, location, price, description, file, validated } = state;
   const handleInputChange = evt => {
     setState(prevState => ({
       ...prevState,
@@ -21,118 +23,117 @@ function NewCampground({ currentUser }) {
   };
 
   const handleSubmit = async evt => {
-    evt.preventDefault();
-    const response = await axios.post("/campgrounds/new", {
-      campground: {
-        ...state,
-        geometry: {
-          type: "Point",
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setState(prevState => ({ ...prevState, validated: false }));
+    } else {
+      evt.preventDefault();
+      const response = await axios.post("/campgrounds/new", {
+        campground: {
+          ...state,
+          geometry: {
+            type: "Point",
+          },
+          author: currentUser.id,
         },
-        author: currentUser.id,
-      },
-    });
-    navigate("/campgrounds");
-    console.log(response);
+      });
+      if (!response.data) return console.error("Can't find a location!");
+      console.log(response.data);
+    }
+    setState(prevState => ({ ...prevState, validated: true }));
   };
 
   return (
-    <div className="row">
+    <div className="NewCampground row">
       <h1 className="text-center">New Campground</h1>
-      <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
-        <form
+      <div className="col-md-6 col-xl-9 mx-auto">
+        <Form
+          noValidate
+          validated={validated}
           action="/campgrounds/new"
           method="POST"
-          className="validated-form"
-          encType="multipart/form-data"
+          className="needs-validation"
           onSubmit={handleSubmit}
         >
-          <div className="mb-3">
-            <label className="form-label" htmlFor="title">
-              Title
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label className="form-label">Title</Form.Label>
+            <Form.Control
               className="form-control"
               type="text"
-              id="title"
               name="title"
               required
               value={title}
               onChange={handleInputChange}
             />
-            <div className="valid-feedback">Looks good!</div>
-          </div>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="location">
-              Location
-            </label>
-            <input
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="location">
+            <Form.Label className="form-label">Location</Form.Label>
+            <Form.Control
               className="form-control"
               type="text"
-              id="location"
               name="location"
               required
               value={location}
               onChange={handleInputChange}
             />
-            <div className="valid-feedback">Looks good!</div>
-          </div>
+            <Form.Text className="valid-feedback">Looks good!</Form.Text>
+          </Form.Group>
 
-          <div className="mb-3">
-            <label className="form-label" htmlFor="price">
-              Campground Price
-            </label>
-            <div className="input-group mb-3">
-              <span className="input-group-text" id="price-label">
-                $
-              </span>
-              <input
+          <Form.Group className="mb-3" controlId="price">
+            <Form.Label className="form-label">Campground Price</Form.Label>
+            <InputGroup hasValidation>
+              <InputGroup.Text
+                id="inputGroupPrepend"
+                className="input-group-text"
+              >
+                @
+              </InputGroup.Text>
+              <FormControl
                 type="text"
                 className="form-control"
-                id="price"
                 name="price"
                 placeholder="0.00"
                 required
                 value={price}
                 onChange={handleInputChange}
               />
-              <div className="valid-feedback">Looks good!</div>
-            </div>
-          </div>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="description">
-              Description
-            </label>
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+            </InputGroup>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label className="form-label">Description</Form.Label>
             <textarea
               style={{ resize: "none" }}
               className="form-control"
               type="text"
-              id="description"
               name="description"
               required
               value={description}
               onChange={handleInputChange}
             ></textarea>
-            <div className="valid-feedback">Looks good!</div>
-          </div>
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
 
-          <div className="mb-3">
-            <label htmlFor="image" className="form-label">
-              Upload image(s)
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="file">
+            <Form.Label className="form-label">Upload image(s)</Form.Label>
+            <Form.Control
               className="form-control"
               type="file"
-              name="images"
-              id="image"
-              multiple
-              value={images}
+              name="file"
+              value={file}
               onChange={handleInputChange}
             />
-          </div>
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
           <div className="mb-3">
-            <button className="btn btn-success">Add Campground</button>
+            <Button type="submit" className="btn btn-success">
+              Add Campground
+            </Button>
           </div>
-        </form>
+        </Form>
         <footer>
           <Link to="/campgrounds">Back to All Campgrounds</Link>
         </footer>
