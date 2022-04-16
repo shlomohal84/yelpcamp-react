@@ -13,6 +13,7 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
   const { id } = useParams();
   // const { pathname } = useLocation();
   useEffect(() => {
+    window.scrollTo(0, 0);
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
@@ -32,7 +33,7 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
 
   return (
     <div className="row">
-      <div className="col-6 pe-1">
+      <div className="col-6">
         <CampgroundCarousel campground={campground} />
         <DetailsCard
           campground={campground}
@@ -40,7 +41,7 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
           isLoggedIn={isLoggedIn}
         />
       </div>
-      <div className="col-6 ps-1">
+      <div className="col-6">
         {loading ? null : (
           <MapBox
             lng={coordinates[0]}

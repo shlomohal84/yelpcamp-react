@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
 import "./component_styles/MapBox.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 function MapBox({ lat, lng, zoom }) {
@@ -27,11 +29,7 @@ function MapBox({ lat, lng, zoom }) {
     }
   }, [lat, lng, zoom]);
 
-  return (
-    <div>
-      <div ref={mapContainer} className="map-container" />
-    </div>
-  );
+  return <div ref={mapContainer} id="map" className="mapboxgl-map" />;
 }
 
 export default MapBox;

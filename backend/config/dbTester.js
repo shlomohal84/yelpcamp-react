@@ -13,9 +13,14 @@ mongoose.connect(
   error => console.log(error)
 );
 async function run() {
-  await CampgroundsModel.findByIdAndDelete("6259c1f015e2b912d4f939b5");
-  mongoose.connection.close();
-
+  const x = await CampgroundsModel.findByIdAndDelete(
+    "625ab7906c7b037e07799a51"
+  );
+  // x.images.push({
+  //   url: "https://res.cloudinary.com/snackeater/image/upload/v1648143967/YelpCamp/IMG_20190101_202242_cus8hc.jpg",
+  //   filename: "Belle",
+  // });
+  console.log(x);
   // bcrypt.hash("1234", 10, async function (err, hash) {
   //   const update = await UsersModel.updateOne(
   //     { _id: "623dfccc3e257184e8e97b10" },

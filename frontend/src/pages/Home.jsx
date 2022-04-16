@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./page_styles/Home.css";
+import "./pages_styles/Home.css";
 function Home({ isLoggedIn }) {
   return (
     <main className="Home">

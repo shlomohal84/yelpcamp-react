@@ -1,9 +1,6 @@
 function Page(props) {
   return (
-    <div
-      className="d-flex justify-content-center"
-      style={{ minHeight: "100vh", maxWidth: "100vw" }}
-    >
+    <div className="Page container mt-5" style={{ minHeight: "100vh" }}>
       {props.children}
     </div>
   );

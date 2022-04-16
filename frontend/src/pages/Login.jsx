@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 function Login({ toggleLogin }) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [state, setState] = useState({
     username: "",
     password: "",

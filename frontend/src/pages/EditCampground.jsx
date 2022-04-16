@@ -1,32 +1,37 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
+
 import axios from "axios";
 
-function EditCampground({ currentUser, currentCampgroundId }) {
-  const { pathname } = useLocation();
-  const params = useParams();
-  const [state, setState] = useState({ files: null });
-  const { title, location, price, description, images, loading } = state;
+function EditCampground({ currentUser }) {
+  //
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [state, setState] = useState({
+    title: "",
+    location: "",
+    price: "",
+    description: "",
+    file: "",
+    validated: false,
+    loading: true,
+  });
+  const { title, location, price, description, file, validated } = state;
 
   useEffect(() => {
-    // console.log(currentPath);
+    window.scrollTo(0, 0);
     async function getApi() {
       try {
-        const response = await axios.get(`/campgrounds/${params.id}`);
-        let { title, location, price, description } = response.data;
+        const response = await axios.get(`/campgrounds/${id}`);
+        const { title, location, price, description, file } = response.data;
         setState(prevState => ({
           ...prevState,
-          campground: response.data,
-          title: title,
-          location: location,
-          price: price,
-          description: description,
-          images: [
-            {
-              url: "https://res.cloudinary.com/snackeater/image/upload/v1648143343/YelpCamp/IMG_20210530_232316_fapoqk.jpg",
-              filename: "angels",
-            },
-          ],
+          title,
+          location,
+          price,
+          description,
+          file,
         }));
       } catch (error) {
         console.error(error);
@@ -35,7 +40,7 @@ function EditCampground({ currentUser, currentCampgroundId }) {
       }
     }
     getApi();
-  }, [currentCampgroundId, pathname, params.id]);
+  }, [id]);
 
   const handleInputChange = evt => {
     setState(prevState => ({
@@ -44,124 +49,120 @@ function EditCampground({ currentUser, currentCampgroundId }) {
     }));
   };
 
-  const handleFileInputChange = evt => {
-    setState(prevState => ({ ...prevState, images: evt.target.files[0] }));
-  };
-
   const handleSubmit = async evt => {
-    evt.preventDefault();
-    const response = await axios.put(pathname, {
-      title,
-      location,
-      price,
-      description,
-      images,
-      loading,
-    });
-    console.log(response.data);
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setState(prevState => ({ ...prevState, validated: false }));
+    } else {
+      evt.preventDefault();
+      const response = await axios.put(`/campgrounds/${id}/edit`, {
+        campground: {
+          ...state,
+          geometry: {
+            type: "Point",
+          },
+          author: currentUser.id,
+        },
+      });
+      console.log(response.data);
+
+      if (!response.data) return console.error("Can't find a location!");
+      navigate(`/campgrounds/${response.data._id}`);
+    }
+    setState(prevState => ({ ...prevState, validated: true }));
   };
 
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
   return (
-    <div className="row">
+    <div className="EditCampground row">
       <h1 className="text-center">Edit Campground</h1>
-      <div className="col-md-6 offset-md-3 col-xl-6">
-        <form
-          action={`/campgrounds/${currentCampgroundId}/edit`}
-          method="POST"
-          className="validated-form"
-          encType="multipart/form-data"
+      <div className="col-md-6 col-xl-9 mx-auto">
+        <Form
+          noValidate
+          validated={validated}
+          action="/campgrounds/new"
+          method="PUT"
+          className="needs-validation"
           onSubmit={handleSubmit}
         >
-          <div className="mb-3">
-            <label className="form-label" htmlFor="title">
-              Title
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label className="form-label">Title</Form.Label>
+            <Form.Control
               className="form-control"
               type="text"
-              id="title"
               name="title"
               required
               value={title}
               onChange={handleInputChange}
             />
-            <div className="valid-feedback">Looks good!</div>
-          </div>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="location">
-              Location
-            </label>
-            <input
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="location">
+            <Form.Label className="form-label">Location</Form.Label>
+            <Form.Control
               className="form-control"
               type="text"
-              id="location"
               name="location"
               required
               value={location}
               onChange={handleInputChange}
             />
-            <div className="valid-feedback">Looks good!</div>
-          </div>
+            <Form.Text className="valid-feedback">Looks good!</Form.Text>
+          </Form.Group>
 
-          <div className="mb-3">
-            <label className="form-label" htmlFor="price">
-              Campground Price
-            </label>
-            <div className="input-group mb-3">
-              <span className="input-group-text" id="price-label">
-                $
-              </span>
-              <input
+          <Form.Group className="mb-3" controlId="price">
+            <Form.Label className="form-label">Campground Price</Form.Label>
+            <InputGroup hasValidation>
+              <InputGroup.Text
+                id="inputGroupPrepend"
+                className="input-group-text"
+              >
+                @
+              </InputGroup.Text>
+              <FormControl
                 type="text"
                 className="form-control"
-                id="price"
                 name="price"
                 placeholder="0.00"
                 required
                 value={price}
                 onChange={handleInputChange}
               />
-              <div className="valid-feedback">Looks good!</div>
-            </div>
-          </div>
-          <div className="mb-3">
-            <label className="form-label" htmlFor="description">
-              Description
-            </label>
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+            </InputGroup>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label className="form-label">Description</Form.Label>
             <textarea
               style={{ resize: "none" }}
               className="form-control"
               type="text"
-              id="description"
               name="description"
               required
               value={description}
               onChange={handleInputChange}
             ></textarea>
-            <div className="valid-feedback">Looks good!</div>
-          </div>
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
 
-          <div className="mb-3">
-            <label htmlFor="image" className="form-label">
-              Upload image(s)
-            </label>
-            <input
+          <Form.Group className="mb-3" controlId="file">
+            <Form.Label className="form-label">Upload image(s)</Form.Label>
+            <Form.Control
               className="form-control"
               type="file"
-              name="images"
-              id="images"
-              multiple
-              required
-              onChange={handleFileInputChange}
+              name="file"
+              // value={file}
+              onChange={handleInputChange}
             />
-          </div>
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
           <div className="mb-3">
-            <button className="btn btn-success">Edit Campground</button>
+            <Button type="submit" className="btn btn-success">
+              Apply Changes
+            </Button>
           </div>
-        </form>
+        </Form>
         <footer>
           <Link to="/campgrounds">Back to All Campgrounds</Link>
         </footer>

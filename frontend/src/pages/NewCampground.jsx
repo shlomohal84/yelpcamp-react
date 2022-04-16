@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
 
 function NewCampground({ currentUser }) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const navigate = useNavigate();
   const [state, setState] = useState({
     title: "",
@@ -41,6 +44,7 @@ function NewCampground({ currentUser }) {
       });
       if (!response.data) return console.error("Can't find a location!");
       console.log(response.data);
+      navigate(`/campgrounds/${response.data._id}`);
     }
     setState(prevState => ({ ...prevState, validated: true }));
   };

@@ -25,8 +25,8 @@ function App() {
   /* <== Hooks */
   const { pathname } = useLocation();
   const [state, setState] = useState({
-    isLoggedIn: null,
-    currentUser: null,
+    isLoggedIn: true,
+    currentUser: { username: "admin", id: "6240b7187630b25715fcdc34" },
     loading: true,
   });
   const { isLoggedIn, currentUser, loading } = state;
@@ -107,7 +107,7 @@ function App() {
           path="/campgrounds/:id/edit"
           element={
             <Page>
-              <EditCampground />
+              <EditCampground currentUser={currentUser} />
             </Page>
           }
         />

@@ -43,13 +43,28 @@ module.exports.createCampground = async (req, res) => {
 };
 
 module.exports.editCampground = async (req, res) => {
-  const { title, location, price, description, images } = req.body;
-  const campground = await CampgroundsModel.findByIdAndUpdate(
-    req.params.id,
-    { title, location, price, description, images },
-    { new: true }
+  console.log(req.body);
+  geoDataCoords = geo.geocode(
+    "mapbox.places",
+    req.body.campground.location,
+    async (err, data) => {
+      if (err || !data.features[0]) {
+        console.error(err);
+        return res.json(err);
+      }
+      if (data) {
+        const campground = await CampgroundsModel.findByIdAndUpdate(
+          req.params.id,
+          { ...req.body.campground },
+          { new: true }
+        );
+        campground.geometry = data.features[0].geometry;
+        await campground.save();
+        console.log(campground);
+        res.json(campground);
+      }
+    }
   );
-  await campground.save();
-  // console.log(req.body);
-  res.json(campground);
 };
+
+// await campground.save();
