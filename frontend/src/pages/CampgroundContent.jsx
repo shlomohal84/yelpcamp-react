@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams /* useLocation */ } from "react-router-dom";
 import axios from "axios";
 
@@ -11,21 +11,22 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
   const [campground, setCampground] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  // const { pathname } = useLocation();
+  const getApi = useCallback(async () => {
+    try {
+      const response = await axios.get(`/campgrounds/${id}`);
+      setCampground(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    async function getApi() {
-      try {
-        const response = await axios.get(`/campgrounds/${id}`);
-        setCampground(response.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
     getApi();
-  }, [id]);
+  }, [getApi]);
+
   if (loading) {
     return <h1>Loading...</h1>;
   }
@@ -46,11 +47,12 @@ function CampgroundContent({ currentUser, isLoggedIn }) {
           <MapBox
             lng={coordinates[0]}
             lat={coordinates[1]}
-            zoom={9}
+            zoom={11}
             campground={campground}
           />
         )}
         <Reviews
+          getApi={getApi}
           campground={campground}
           currentUser={currentUser}
           isLoggedIn={isLoggedIn}

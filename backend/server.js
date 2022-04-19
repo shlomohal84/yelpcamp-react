@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", usersRoutes);
 app.use("/campgrounds", campgroundsRoutes);
-app.use("/reviews", reviewsRoutes);
+app.use("/campgrounds/:id/reviews", reviewsRoutes);
 
 app.listen(port, () =>
   console.log(`>> Server loaded successfully on port ${port}`)

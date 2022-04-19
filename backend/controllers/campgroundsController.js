@@ -6,7 +6,8 @@ geo.setAccessToken(mapBoxToken);
 module.exports.index = async (req, res) => {
   const campgrounds = await CampgroundsModel.find()
     .sort({ _id: -1 })
-    .populate("reviews");
+    .populate("reviews")
+    .limit(20);
   res.json(campgrounds);
 };
 
@@ -42,7 +43,6 @@ module.exports.createCampground = async (req, res) => {
 };
 
 module.exports.editCampground = async (req, res) => {
-  console.log(req.body);
   geoDataCoords = geo.geocode(
     "mapbox.places",
     req.body.campground.location,
@@ -59,7 +59,6 @@ module.exports.editCampground = async (req, res) => {
         );
         campground.geometry = data.features[0].geometry;
         await campground.save();
-        console.log(campground);
         res.json(campground);
       }
     }

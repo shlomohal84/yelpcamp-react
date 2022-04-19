@@ -66,7 +66,6 @@ function EditCampground({ currentUser }) {
           author: currentUser.id,
         },
       });
-      console.log(response.data);
 
       if (!response.data) return console.error("Can't find a location!");
       navigate(`/campgrounds/${response.data._id}`);

@@ -1,22 +1,55 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-function Reviews({ campground, currentUser, isLoggedIn }) {
-  const [state, setState] = useState({ rating: 1 });
-  const { rating } = state;
+function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
+  const { id } = useParams();
+  const [state, setState] = useState({
+    rating: 1,
+    input: "",
+    reviewId: "",
+  });
+  const { rating, input, reviewId } = state;
+
   const handleRating = evt => {
     setState(prevState => ({ ...prevState, rating: Number(evt.target.value) }));
   };
 
+  const handleInput = evt => {
+    setState(prevState => ({ ...prevState, input: evt.target.value }));
+  };
+
+  const handleSubmit = async evt => {
+    evt.preventDefault();
+    await axios.post(`/campgrounds/${id}/reviews`, {
+      author: currentUser.id,
+      review: { rating, body: input },
+    });
+    setState(prevState => ({
+      ...prevState,
+      input: "",
+      rating: 1,
+    }));
+    getApi();
+  };
+
+  const handleDelete = async evt => {
+    evt.preventDefault();
+    await axios.delete(`/campgrounds/${id}/reviews/${reviewId}`);
+    getApi();
+  };
   return (
     <>
       {isLoggedIn && (
         <>
           <h2>Leave a review</h2>
           <form
-            action="/campgrounds/<%=campground._id %>/reviews"
+            action={`/campgrounds/${id}/reviews`}
+            onSubmit={handleSubmit}
             method="POST"
             className="mb-3 validated-form"
             noValidate
+            required
           >
             <div className="mb-3">
               <fieldset className="starability-basic">
@@ -87,9 +120,11 @@ function Reviews({ campground, currentUser, isLoggedIn }) {
                 Review text:
               </label>
               <textarea
+                value={input}
+                onChange={handleInput}
                 className="form-control"
-                name="review[body]"
-                id="body"
+                name="input"
+                id="input"
                 cols="30"
                 rows="3"
                 required
@@ -110,13 +145,24 @@ function Reviews({ campground, currentUser, isLoggedIn }) {
                 Rated: 3 stars
               </p>
               <h6 className="card-subtitle mb-2 text-muted"> </h6>
-              <p className="card-text"> Review: {review.body} </p>
+              <p className="card-text fst-italic"> {review.body} </p>
               {currentUser && currentUser.id === review.author._id && (
                 <form
-                  action={`/campgrounds/${campground._id}/reviews/${campground._id}?_method=DELETE"
-            method="POST`}
+                  onSubmit={handleDelete}
+                  method="DELETE"
+                  action={`/campgrounds/${id}/reviews/${review._id}`}
                 >
-                  <button className="btn btn-sm btn-danger">Delete</button>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() =>
+                      setState(prevState => ({
+                        ...prevState,
+                        reviewId: review._id,
+                      }))
+                    }
+                  >
+                    Delete
+                  </button>
                 </form>
               )}
             </div>

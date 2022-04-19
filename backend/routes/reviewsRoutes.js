@@ -1,7 +1,15 @@
 const express = require("express");
-const router = express.Router();
-const { reviews } = require("../controllers/reviewsController");
+const router = express.Router({ mergeParams: true });
+const catchAsync = require("../middleware/catchAsync");
 
-router.route("/").get(reviews);
+const {
+  reviews,
+  addReview,
+  deleteReview,
+} = require("../controllers/reviewsController");
+
+router.route("/").get(reviews).post(catchAsync(addReview));
+
+router.route("/:reviewId").delete(catchAsync(deleteReview));
 
 module.exports = router;
