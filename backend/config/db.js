@@ -9,7 +9,7 @@ async function connectDB() {
     const connect = await mongoose.connect(/* remoteDB  ||  */ localDB);
     console.log(
       `>> MONGODB connected successfully on ${connect.connection.host}/${dbName}`
-        .cyan.underline
+        .cyan
     );
   } catch (error) {
     throw new Error(error);

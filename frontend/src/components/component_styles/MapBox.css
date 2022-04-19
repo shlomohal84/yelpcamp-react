@@ -2,3 +2,8 @@
   height: 300px;
   /* width: 400px */
 }
+
+.mapboxgl-canvas {
+  position: initial !important;
+  height: 250px !important
+}

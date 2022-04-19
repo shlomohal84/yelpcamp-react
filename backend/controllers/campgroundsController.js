@@ -6,8 +6,7 @@ geo.setAccessToken(mapBoxToken);
 module.exports.index = async (req, res) => {
   const campgrounds = await CampgroundsModel.find()
     .sort({ _id: -1 })
-    .populate("reviews")
-    .limit(10);
+    .populate("reviews");
   res.json(campgrounds);
 };
 

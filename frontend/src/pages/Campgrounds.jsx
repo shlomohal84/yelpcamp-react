@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ClusterMapBox from "../components/ClusterMapBox";
 
-import MapBox from "../components/MapBox";
 function Campgrounds({ isLoggedIn }) {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,7 +30,7 @@ function Campgrounds({ isLoggedIn }) {
 
   return (
     <>
-      {/* <MapBox lng={34.845452838230635} lat={32.32111744313199} zoom={10} /> */}
+      <ClusterMapBox campgrounds={campgrounds} />
 
       <h1>All Campgrounds</h1>
       <div>
