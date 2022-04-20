@@ -57,7 +57,7 @@ function EditCampground({ currentUser }) {
       setState(prevState => ({ ...prevState, validated: false }));
     } else {
       evt.preventDefault();
-      const response = await axios.put(`/campgrounds/${id}/edit`, {
+      const response = await axios.put(`/campgrounds/${id}`, {
         campground: {
           ...state,
           geometry: {
@@ -80,7 +80,7 @@ function EditCampground({ currentUser }) {
         <Form
           noValidate
           validated={validated}
-          action="/campgrounds/new"
+          action={`/campgrounds/${id}`}
           method="PUT"
           className="needs-validation"
           onSubmit={handleSubmit}

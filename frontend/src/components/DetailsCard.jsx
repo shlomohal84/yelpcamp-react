@@ -1,6 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function DetailsCard({ campground, currentUser, isLoggedIn }) {
+  const navigate = useNavigate();
+  const handleDelete = async evt => {
+    evt.preventDefault();
+    await axios.delete(`/campgrounds/${campground._id}`);
+    navigate("/campgrounds");
+  };
+
   return (
     <div className="card mb-3">
       <div className="card-body">
@@ -25,8 +33,9 @@ function DetailsCard({ campground, currentUser, isLoggedIn }) {
           {(currentUser || isLoggedIn) && (
             <form
               className="d-inline"
-              action="/campgrounds/<%=campground._id%>?_method=DELETE"
-              method="POST"
+              action={`/campgrounds/${campground._id}`}
+              method="DELETE"
+              onSubmit={handleDelete}
             >
               <button className="btn btn-danger">Delete</button>
             </form>

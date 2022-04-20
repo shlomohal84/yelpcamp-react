@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-// const reviewsModel = require("./reviewsModel")
-
+const ReviewsModel = require("./reviewsModel");
 const ImageSchema = new Schema({
   url: String,
   filename: String,
@@ -43,5 +42,15 @@ const CampgroundSchema = new Schema(
     timestamps: true,
   }
 );
+
+CampgroundSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await ReviewsModel.deleteMany({
+      _id: {
+        $in: doc.reviews,
+      },
+    });
+  }
+});
 
 module.exports = model("Campground", CampgroundSchema);

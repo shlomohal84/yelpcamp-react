@@ -65,4 +65,8 @@ module.exports.editCampground = async (req, res) => {
   );
 };
 
-// await campground.save();
+module.exports.deleteCampground = async (req, res) => {
+  const { id } = req.params;
+  const campgrounds = await CampgroundsModel.findByIdAndDelete(id);
+  res.json(id);
+};
