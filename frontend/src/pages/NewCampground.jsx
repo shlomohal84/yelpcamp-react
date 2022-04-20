@@ -15,17 +15,53 @@ function NewCampground({ currentUser }) {
     location: "",
     price: "",
     description: "",
-    file: "",
+    previewSource: "",
     validated: false,
   });
 
-  const { title, location, price, description, file, validated } = state;
+  const { title, location, price, description, validated, previewSource } =
+    state;
+
   const handleInputChange = evt => {
     setState(prevState => ({
       ...prevState,
       [evt.target.name]: evt.target.value,
     }));
   };
+
+  /* ==> Config file upload */
+  const handleFileInputChange = evt => {
+    const file = evt.target.files[0];
+    previewFile(file);
+  };
+
+  const previewFile = file => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setState(prevState => ({
+        ...prevState,
+        previewSource: reader.result,
+      }));
+    };
+  };
+
+  const uploadImage = async base64EncodedImage => {
+    try {
+      await fetch("/campgrounds/new", {
+        method: "POST",
+        body: JSON.stringify({
+          data: base64EncodedImage,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  /* <== Config file upload */
 
   const handleSubmit = async evt => {
     const form = evt.currentTarget;
@@ -35,6 +71,8 @@ function NewCampground({ currentUser }) {
       setState(prevState => ({ ...prevState, validated: false }));
     } else {
       evt.preventDefault();
+      if (!previewSource) return;
+      await uploadImage(previewSource);
       const response = await axios.post("/campgrounds/new", {
         campground: {
           ...state,
@@ -129,8 +167,8 @@ function NewCampground({ currentUser }) {
               className="form-control"
               type="file"
               name="file"
-              value={file}
-              onChange={handleInputChange}
+              onChange={handleFileInputChange}
+              required
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>
@@ -140,10 +178,19 @@ function NewCampground({ currentUser }) {
             </Button>
           </div>
         </Form>
-        <footer>
-          <Link to="/campgrounds">Back to All Campgrounds</Link>
-        </footer>
       </div>
+      {previewSource && (
+        <div>
+          <img
+            src={previewSource}
+            alt={previewSource}
+            style={{ height: "150px", width: "150px" }}
+          />
+        </div>
+      )}
+      <footer>
+        <Link to="/campgrounds">Back to All Campgrounds</Link>
+      </footer>
     </div>
   );
 }

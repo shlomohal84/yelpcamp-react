@@ -8,15 +8,15 @@ const {
   editCampground,
   deleteCampground,
 } = require("../controllers/campgroundsController");
-
+const checkDbStatus = require("../middleware/checkDbStatus");
 router.route("/").get(index);
 
-router.route("/new").post(catchAsync(createCampground));
+router.route("/new").post(checkDbStatus, catchAsync(createCampground));
 
 router
   .route("/:id")
   .get(campgroundContent)
-  .put(catchAsync(editCampground))
+  .put(checkDbStatus, catchAsync(editCampground))
   .delete(catchAsync(deleteCampground));
 
 module.exports = router;

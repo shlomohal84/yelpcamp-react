@@ -12,9 +12,9 @@ import Campgrounds from "./pages/Campgrounds";
 import NewCampground from "./pages/NewCampground";
 import CampgroundContent from "./pages/CampgroundContent";
 import EditCampground from "./pages/EditCampground";
+import "bootstrap";
+
 /*==>STYLES IMPORTS */
-//eslint-disable-next-line
-import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 import "./components/component_styles/starability-all.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
@@ -60,6 +60,7 @@ function App() {
         pathname={pathname}
         toggleLogin={toggleLogin}
         isLoggedIn={isLoggedIn}
+        currentUser={currentUser}
         //
       />
       <Routes>

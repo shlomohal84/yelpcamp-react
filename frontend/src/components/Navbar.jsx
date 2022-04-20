@@ -2,7 +2,7 @@
 
 import { Link } from "react-router-dom";
 
-function Navbar({ pathname, isLoggedIn }) {
+function Navbar({ pathname, isLoggedIn, toggleLogin, currentUser }) {
   return pathname !== "/" ? (
     <nav
       className={"navbar navbar-expand-lg navbar-dark bg-success sticky-top"}
@@ -45,7 +45,7 @@ function Navbar({ pathname, isLoggedIn }) {
               <>
                 <li className="nav-item">
                   <Link
-                    // onClick={() => toggleLogin(true)}
+                    onClick={() => toggleLogin(true)}
                     className="nav-link text-white"
                     to="/login"
                   >
@@ -62,7 +62,7 @@ function Navbar({ pathname, isLoggedIn }) {
             {isLoggedIn && (
               <li className="nav-item">
                 <Link
-                  // onClick={() => toggleLogin(false)}
+                  onClick={() => toggleLogin(false)}
                   className="nav-link text-white"
                   to="/login"
                 >

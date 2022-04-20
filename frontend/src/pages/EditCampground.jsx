@@ -15,25 +15,26 @@ function EditCampground({ currentUser }) {
     location: "",
     price: "",
     description: "",
-    file: "",
+    previewSource: "",
     validated: false,
     loading: true,
   });
-  const { title, location, price, description, file, validated } = state;
+  const { title, location, price, description, previewSource, validated } =
+    state;
 
   useEffect(() => {
     window.scrollTo(0, 0);
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
-        const { title, location, price, description, file } = response.data;
+        const { title, location, price, description, previewSource } =
+          response.data;
         setState(prevState => ({
           ...prevState,
           title,
           location,
           price,
           description,
-          file,
         }));
       } catch (error) {
         console.error(error);
@@ -43,6 +44,40 @@ function EditCampground({ currentUser }) {
     }
     getApi();
   }, [id]);
+
+  /* ==> Config file upload */
+  const handleFileInputChange = evt => {
+    const file = evt.target.files[0];
+    previewFile(file);
+  };
+
+  const previewFile = file => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setState(prevState => ({
+        ...prevState,
+        previewSource: reader.result,
+      }));
+    };
+  };
+
+  const uploadImage = async base64EncodedImage => {
+    try {
+      await fetch(`/campgrounds/${id}`, {
+        method: "POST",
+        body: JSON.stringify({
+          data: base64EncodedImage,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  /* <== Config file upload */
 
   const handleInputChange = evt => {
     setState(prevState => ({
@@ -59,6 +94,7 @@ function EditCampground({ currentUser }) {
       setState(prevState => ({ ...prevState, validated: false }));
     } else {
       evt.preventDefault();
+      if (previewSource) await uploadImage(previewSource);
       const response = await axios.put(`/campgrounds/${id}`, {
         campground: {
           ...state,
@@ -68,10 +104,9 @@ function EditCampground({ currentUser }) {
           author: currentUser.id,
         },
       });
-
       if (!response.data) return console.error("Can't find a location!");
-      navigate(`/campgrounds/${response.data._id}`);
     }
+    navigate(`/campgrounds/${id}`);
     setState(prevState => ({ ...prevState, validated: true }));
   };
 
@@ -154,7 +189,7 @@ function EditCampground({ currentUser }) {
               type="file"
               name="file"
               // value={file}
-              onChange={handleInputChange}
+              onChange={handleFileInputChange}
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>

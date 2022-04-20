@@ -1,14 +1,14 @@
 const CampgroundsModel = require("../models/campgroundsModel");
-const mapBoxToken = process.env.REACT_APP_MAPBOX_TOKEN;
+const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
 geo.setAccessToken(mapBoxToken);
-
+const { cloudinary } = require("../utils/cloudinaryAPI");
 /* ==> Show all campgrounds */
 module.exports.index = async (req, res) => {
   const campgrounds = await CampgroundsModel.find()
     .sort({ _id: -1 })
-    .populate("reviews")
-    .limit(20);
+    .populate("reviews");
+  // .limit(20);
   res.json(campgrounds);
 };
 /* <== Show all campgrounds */
@@ -40,13 +40,24 @@ module.exports.createCampground = async (req, res) => {
       if (data) {
         const campground = await new CampgroundsModel(req.body.campground);
         campground.geometry = data.features[0].geometry;
+        const fileStr = req.body.campground.previewSource;
+        const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
+          folder: `yelpCamp/${campground._id}`,
+          use_filename: true,
+          unique_filename: false,
+        });
+        campground.images.push({
+          url: uploadedResponse.url,
+          filename: uploadedResponse.folder,
+        });
+
         await campground.save();
         res.json(campground);
       }
     }
   );
 };
-/* <== Create a new campground */
+// /* <== Create a new campground */
 
 /* ==> Edit a campground */
 module.exports.editCampground = async (req, res) => {
@@ -65,8 +76,21 @@ module.exports.editCampground = async (req, res) => {
           { new: true }
         );
         campground.geometry = data.features[0].geometry;
+        if (req.body.campground.previewSource.length) {
+          const fileStr = req.body.campground.previewSource;
+          const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
+            folder: `yelpCamp/${campground._id}`,
+            use_filename: true,
+            unique_filename: false,
+          });
+          campground.images.push({
+            url: uploadedResponse.url,
+            filename: uploadedResponse.folder,
+          });
+        }
+
         await campground.save();
-        res.json(campground);
+        res.send(campground);
       }
     }
   );

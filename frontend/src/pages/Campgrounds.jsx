@@ -34,7 +34,14 @@ function Campgrounds({ isLoggedIn }) {
     <>
       <ClusterMapBox campgrounds={campgrounds} />
 
-      <h1>All Campgrounds</h1>
+      <div
+        className="d-flex align-items-center w-25 border-bottom border-top justify-content-center mx-auto rounded bg-opacity-50 text-success"
+        style={{ height: "3em" }}
+      >
+        <h5 className="text-center m-0 fw-bold">
+          Found {campgrounds.length} campgrounds
+        </h5>
+      </div>
       <div>
         <Link to={isLoggedIn ? "/campgrounds/new" : "/login"}>
           Add Campground
