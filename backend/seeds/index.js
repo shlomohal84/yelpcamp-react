@@ -1,3 +1,5 @@
+// Auto assign random initial campground data
+
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }

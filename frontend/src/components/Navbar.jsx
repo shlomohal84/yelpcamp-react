@@ -1,3 +1,5 @@
+//Page navbar header
+
 import { Link } from "react-router-dom";
 
 function Navbar({ pathname, isLoggedIn }) {

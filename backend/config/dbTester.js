@@ -1,3 +1,5 @@
+// For testing purposes. not imported in the project
+
 const mongoose = require("mongoose");
 const { Schema, model } = require("mongoose");
 const CampgroundsModel = require("../models/campgroundsModel");

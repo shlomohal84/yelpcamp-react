@@ -1,3 +1,5 @@
+// Create new campground page
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";

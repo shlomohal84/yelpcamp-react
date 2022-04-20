@@ -1,3 +1,5 @@
+// landing page
+
 import { Link } from "react-router-dom";
 import "./pages_styles/Home.css";
 function Home({ isLoggedIn }) {

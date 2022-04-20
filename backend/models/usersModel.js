@@ -23,6 +23,7 @@ const UsersModel = new Schema(
   }
 );
 
+/* ==> Hash password on new user registration */
 UsersModel.pre("save", function (next) {
   const user = this;
   // only hash the password if it has been modified (or is new)
@@ -37,7 +38,9 @@ UsersModel.pre("save", function (next) {
     next();
   });
 });
+/* <== Hash password on new user registration */
 
+/* ==> Validate password on user login */
 UsersModel.methods.comparePassword = function (candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
     if (err) return cb(err);
@@ -45,3 +48,4 @@ UsersModel.methods.comparePassword = function (candidatePassword, cb) {
   });
 };
 module.exports = model("User", UsersModel);
+/* <== Validate password on user login */

@@ -1,3 +1,5 @@
+// Popup markup info upon clicking on a single circle marker
+
 import { useEffect } from "react";
 import { Popup } from "react-map-gl";
 import { Link } from "react-router-dom";

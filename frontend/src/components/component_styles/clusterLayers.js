@@ -1,3 +1,5 @@
+// Stylings for mapbox clusters and markers
+
 export const clusters = {
   id: "clusters",
   type: "circle",

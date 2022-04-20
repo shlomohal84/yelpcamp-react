@@ -1,12 +1,14 @@
+// Mapbox showing campground locationon
+// on the right column of campground content
 import { useState, useEffect, useRef } from "react";
-
 import mapboxgl from "mapbox-gl";
+
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./component_styles/MapBox.css";
 
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
-
 function MapBox({ lat, lng, zoom }) {
+  mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+
   //eslint-disable-next-line
   const mapContainer = useRef(null);
   const map = useRef(null);

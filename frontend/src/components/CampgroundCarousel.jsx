@@ -1,3 +1,5 @@
+// Campground content Images Slider
+
 function CampgroundCarousel({ campground }) {
   return (
     <div

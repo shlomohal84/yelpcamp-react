@@ -1,3 +1,6 @@
+// Campground Reviews container
+// on the right column of campground content
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";

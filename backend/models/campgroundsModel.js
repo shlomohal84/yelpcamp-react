@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const ReviewsModel = require("./reviewsModel");
+
+/* ==> Schema for image cloud uploads */
 const ImageSchema = new Schema({
   url: String,
   filename: String,
 });
+/* <== Schema for image cloud uploads */
 
 const CampgroundSchema = new Schema(
   {
@@ -43,6 +46,7 @@ const CampgroundSchema = new Schema(
   }
 );
 
+/* ==> Method deleting all reviews under deleted campground */
 CampgroundSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
     await ReviewsModel.deleteMany({
@@ -52,5 +56,6 @@ CampgroundSchema.post("findOneAndDelete", async function (doc) {
     });
   }
 });
+/* <== Method deleting all reviews under deleted campground */
 
 module.exports = model("Campground", CampgroundSchema);

@@ -1,3 +1,5 @@
+// Backgrounds index top cluster map
+
 import { useRef, useState, useEffect } from "react";
 import { Map, Source, Layer } from "react-map-gl";
 import {
