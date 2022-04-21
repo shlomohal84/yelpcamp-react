@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function Register() {
+function Register({ toggleLogin }) {
   const navigate = useNavigate();
 
   const handleRegister = evt => {
@@ -15,7 +15,7 @@ function Register() {
       email: form[1].value,
       password: form[2].value,
     };
-    console.log(JSON.stringify(user));
+
     fetch("/register", {
       method: "POST",
       headers: {
@@ -23,13 +23,24 @@ function Register() {
       },
       body: JSON.stringify(user),
     })
-      .then(res => res.json())
       .then(data => {
         console.log(data);
         localStorage.setItem("token", data.token);
       })
-      .catch(error => console.error(error));
-
+      .then(
+        fetch("/login", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(user),
+        })
+          .then(res => res.json())
+          .then(data => {
+            localStorage.setItem("token", data.token);
+          })
+      );
+    toggleLogin(user.username);
     navigate("/campgrounds");
   };
 
@@ -41,8 +52,7 @@ function Register() {
       },
     })
       .then(res => res.json())
-      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null))
-      .catch(err => console.error(err));
+      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null));
   }, [navigate]);
 
   return (

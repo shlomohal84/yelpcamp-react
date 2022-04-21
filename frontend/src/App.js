@@ -69,7 +69,7 @@ function App() {
           path="/register"
           element={
             <Page>
-              <Register />
+              <Register toggleLogin={toggleLogin} />
             </Page>
           }
         />

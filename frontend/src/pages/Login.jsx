@@ -24,7 +24,9 @@ function Login({ toggleLogin }) {
       body: JSON.stringify(user),
     })
       .then(res => res.json())
-      .then(data => localStorage.setItem("token", data.token));
+      .then(data => {
+        localStorage.setItem("token", data.token);
+      });
     toggleLogin(user.username);
     navigate("/campgrounds");
   };
@@ -38,35 +40,8 @@ function Login({ toggleLogin }) {
     })
       .then(res => res.json())
       .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null));
-
-    // return () => {
-    //     fetch("/isUserAuth", {
-    //       headers: {
-    //         "x-access-token": localStorage.getItem("token"),
-    //       },
-    //     })
-    //   .then(data=> data.isLoggedIn ? )
-    // };
   }, [navigate]);
-  // const onSubmit = async evt => {
-  //   evt.preventDefault();
-  //   try {
-  //     const response = await axios.post("/login", {
-  //       username,
-  //       password,
-  //     });
-  //     if (!response.data.loginStatus) {
-  //       return toggleLogin(false, {});
-  //     }
-  //     toggleLogin(response.data.loginStatus, {
-  //       username: response.data.username,
-  //       id: response.data.id,
-  //     });
-  //     navigate("/campgrounds");
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
