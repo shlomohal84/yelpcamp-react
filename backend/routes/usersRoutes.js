@@ -1,9 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { login, register } = require("../controllers/usersController");
+const {
+  login,
+  register,
+  isUserAuth,
+} = require("../controllers/usersController");
 const catchAsync = require("../middleware/catchAsync");
+const { verifyJWT } = require("../middleware/userAuth");
 
-router.route("/login").post(catchAsync(login));
 router.route("/register").post(catchAsync(register));
+router.route("/isUserAuth").get(verifyJWT, isUserAuth);
+router.route("/login").post(login);
 
 module.exports = router;

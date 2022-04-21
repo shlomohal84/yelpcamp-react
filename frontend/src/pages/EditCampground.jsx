@@ -1,6 +1,6 @@
 // Edit a campground page
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 
@@ -18,16 +18,24 @@ function EditCampground({ currentUser }) {
     previewSource: "",
     validated: false,
     loading: true,
+    images: [],
   });
-  const { title, location, price, description, previewSource, validated } =
-    state;
+  const {
+    title,
+    location,
+    price,
+    description,
+    previewSource,
+    validated,
+    images,
+  } = state;
 
   useEffect(() => {
     window.scrollTo(0, 0);
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
-        const { title, location, price, description, previewSource } =
+        const { title, location, price, description, previewSource, images } =
           response.data;
         setState(prevState => ({
           ...prevState,
@@ -35,6 +43,7 @@ function EditCampground({ currentUser }) {
           location,
           price,
           description,
+          images,
         }));
       } catch (error) {
         console.error(error);
@@ -199,6 +208,19 @@ function EditCampground({ currentUser }) {
             </Button>
           </div>
         </Form>
+
+        {images.map((img, idx) => {
+          let url = img.url.replace("/upload", "/upload/w_200");
+          return (
+            <Fragment key={idx}>
+              <div>
+                <button>X</button>
+              </div>
+              <img src={url} alt={img.filename} />
+            </Fragment>
+          );
+        })}
+
         <footer>
           <Link to="/campgrounds">Back to All Campgrounds</Link>
         </footer>

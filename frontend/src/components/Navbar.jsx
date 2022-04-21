@@ -1,8 +1,30 @@
 //Page navbar header
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-function Navbar({ pathname, isLoggedIn, toggleLogin, currentUser }) {
+function Navbar({ pathname, username, toggleLogin }) {
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    toggleLogin(null);
+    localStorage.removeItem("token");
+    // navigate("/login");
+  };
+
+  useEffect(() => {
+    fetch("/isUserAuth", {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    })
+      .then(res => res.json())
+      .then(data =>
+        data.isLoggedIn ? toggleLogin(data.username) : toggleLogin(null)
+      );
+    return () => toggleLogin(prevState => prevState);
+  }, []);
+
   return pathname !== "/" ? (
     <nav
       className={"navbar navbar-expand-lg navbar-dark bg-success sticky-top"}
@@ -41,11 +63,21 @@ function Navbar({ pathname, isLoggedIn, toggleLogin, currentUser }) {
             </li>
           </ul>
           <ul className="navbar-nav ms-auto">
-            {!isLoggedIn && (
+            {username ? (
+              <li className="nav-item">
+                <Link
+                  onClick={logout}
+                  className="nav-link text-white"
+                  to="/login"
+                >
+                  Logout
+                </Link>
+              </li>
+            ) : (
               <>
                 <li className="nav-item">
                   <Link
-                    onClick={() => toggleLogin(true)}
+                    // onClick={() => toggleLogin(true)}
                     className="nav-link text-white"
                     to="/login"
                   >
@@ -58,17 +90,6 @@ function Navbar({ pathname, isLoggedIn, toggleLogin, currentUser }) {
                   </Link>
                 </li>
               </>
-            )}
-            {isLoggedIn && (
-              <li className="nav-item">
-                <Link
-                  onClick={() => toggleLogin(false)}
-                  className="nav-link text-white"
-                  to="/login"
-                >
-                  Logout
-                </Link>
-              </li>
             )}
           </ul>
         </div>

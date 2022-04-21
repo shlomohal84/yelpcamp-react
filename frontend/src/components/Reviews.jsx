@@ -143,7 +143,7 @@ function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
         return (
           <div className="card mb-3" key={idx}>
             <div className="card-body">
-              <h5 className="card-title">{review.author.username}</h5>
+              <h5 className="card-title">Author: {review.author.username}</h5>
               <p className="starability-result" data-rating={review.rating}>
                 Rated: 3 stars
               </p>

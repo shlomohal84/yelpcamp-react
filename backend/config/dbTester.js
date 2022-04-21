@@ -15,7 +15,10 @@ mongoose.connect(
   error => console.log(error)
 );
 async function run() {
-  // const camp = await CampgroundsModel.findById("625a13b975dd40ab836d7fce");
+  const camp = await CampgroundsModel.find();
+
+  console.log(camp[1]);
+  // await camp.save();
   // const reviews = await ReviewsModel.findByIdAndDelete(
   //   "625edee4a12db400a62f6e61"
   // );

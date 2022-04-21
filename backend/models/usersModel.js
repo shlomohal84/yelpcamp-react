@@ -7,6 +7,7 @@ const UsersModel = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     username: {
       type: String,
@@ -23,29 +24,30 @@ const UsersModel = new Schema(
   }
 );
 
-/* ==> Hash password on new user registration */
-UsersModel.pre("save", function (next) {
-  const user = this;
-  // only hash the password if it has been modified (or is new)
-  if (!user.isModified("password")) return next();
-
-  //generate salt+hash
-  bcrypt.hash(user.password, 10, function (err, hash) {
-    if (err) return next(err);
-
-    // Override the clearText password with hahsed one
-    user.password = hash;
-    next();
-  });
-});
-/* <== Hash password on new user registration */
-
-/* ==> Validate password on user login */
-UsersModel.methods.comparePassword = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
 module.exports = model("User", UsersModel);
-/* <== Validate password on user login */
+
+// /* ==> Hash password on new user registration */
+// UsersModel.pre("save", function (next) {
+//   const user = this;
+//   // only hash the password if it has been modified (or is new)
+//   if (!user.isModified("password")) return next();
+
+//   //generate salt+hash
+//   bcrypt.hash(user.password, 10, function (err, hash) {
+//     if (err) return next(err);
+
+//     // Override the clearText password with hahsed one
+//     user.password = hash;
+//     next();
+//   });
+// });
+// /* <== Hash password on new user registration */
+
+// /* ==> Validate password on user login */
+// UsersModel.methods.comparePassword = function (candidatePassword, cb) {
+//   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+//     if (err) return cb(err);
+//     cb(null, isMatch);
+//   });
+// };
+// /* <== Validate password on user login */

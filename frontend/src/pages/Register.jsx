@@ -1,32 +1,50 @@
 // User registration page
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 function Register() {
+  const navigate = useNavigate();
+
+  const handleRegister = evt => {
+    evt.preventDefault();
+
+    const form = evt.target;
+    const user = {
+      username: form[0].value,
+      email: form[1].value,
+      password: form[2].value,
+    };
+    console.log(JSON.stringify(user));
+    fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+        localStorage.setItem("token", data.token);
+      })
+      .catch(error => console.error(error));
+
+    navigate("/campgrounds");
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
-  const [state, setState] = useState({
-    username: "",
-    password: "",
-    email: "",
-  });
-  const { username, password, email } = state;
+    fetch("/isUserAuth", {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    })
+      .then(res => res.json())
+      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null))
+      .catch(err => console.error(err));
+  }, [navigate]);
 
-  const handleInputChange = evt => {
-    setState(prevState => ({
-      ...prevState,
-      [evt.target.name]: evt.target.value,
-    }));
-  };
-  const navigate = useNavigate();
-  const handleRegistration = async evt => {
-    evt.preventDefault(evt);
-    const response = await axios.post("/register", { ...state });
-    console.log(response);
-    if (response.data.registerStatus) return navigate("/campgrounds");
-  };
   return (
     <div className="Register container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
@@ -44,7 +62,7 @@ function Register() {
                 method="POST"
                 className="validated-form"
                 noValidate
-                onSubmit={handleRegistration}
+                onSubmit={evt => handleRegister(evt)}
               >
                 <div className="mb-3">
                   <label className="form-label" htmlFor="username">
@@ -57,8 +75,6 @@ function Register() {
                     name="username"
                     required
                     autoFocus
-                    value={username}
-                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
@@ -72,8 +88,6 @@ function Register() {
                     id="email"
                     name="email"
                     required
-                    value={email}
-                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
@@ -87,12 +101,14 @@ function Register() {
                     id="password"
                     name="password"
                     required
-                    value={password}
-                    onChange={handleInputChange}
                   />
                   <div className="valid-feedback">Looks good!</div>
                 </div>
-                <button className="btn btn-success btn-block w-100">
+                <button
+                  type="submit"
+                  value="submit"
+                  className="btn btn-success btn-block w-100"
+                >
                   Register
                 </button>
               </form>

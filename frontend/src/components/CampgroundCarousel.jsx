@@ -34,9 +34,9 @@ function CampgroundCarousel({ campground }) {
               >
                 <img
                   style={{ height: "300px" }}
-                  src={image.url}
+                  src={image.url || null}
                   className="d-block w-100"
-                  alt={image.filename}
+                  alt={image.filename || "Image not found"}
                 />
               </div>
             );
@@ -50,7 +50,7 @@ function CampgroundCarousel({ campground }) {
               style={{ height: "300px" }}
               src={null}
               className="d-block w-100"
-              alt={"No images"}
+              alt={"Image not found"}
             />
           </div>
         )}

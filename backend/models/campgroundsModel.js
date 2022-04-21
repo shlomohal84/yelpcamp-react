@@ -7,8 +7,8 @@ const ImageSchema = new Schema({
   url: String,
   filename: String,
 });
-/* <== Schema for image cloud uploads */
 
+/* <== Schema for image cloud uploads */
 const CampgroundSchema = new Schema(
   {
     title: {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 // import axios from "axios";
 
 import Page from "./pages/Page";
@@ -23,13 +23,14 @@ import "./App.css";
 /* <== COMPONENT DECLARATION*/
 function App() {
   /* <== Hooks */
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [state, setState] = useState({
-    isLoggedIn: true,
-    currentUser: { username: "admin", id: "6240b7187630b25715fcdc34" },
+    currentUser: {},
     loading: true,
+    username: null,
   });
-  const { isLoggedIn, currentUser, loading } = state;
+  const { currentUser, loading, username } = state;
 
   useEffect(() => {
     setState(prevState => ({
@@ -42,11 +43,10 @@ function App() {
   /* Hooks ==> */
 
   /* <== Functions */
-  const toggleLogin = (loginStatus, user) => {
+  const toggleLogin = username => {
     setState(prevState => ({
       ...prevState,
-      isLoggedIn: loginStatus,
-      currentUser: user,
+      username: username,
     }));
   };
 
@@ -58,9 +58,9 @@ function App() {
     <div className="App">
       <Navbar
         pathname={pathname}
-        toggleLogin={toggleLogin}
-        isLoggedIn={isLoggedIn}
         currentUser={currentUser}
+        toggleLogin={toggleLogin}
+        username={username}
         //
       />
       <Routes>
@@ -77,11 +77,7 @@ function App() {
           path="/login"
           element={
             <Page>
-              <Login
-                currentUser={currentUser}
-                isLoggedIn={isLoggedIn}
-                toggleLogin={toggleLogin}
-              />
+              <Login currentUser={currentUser} toggleLogin={toggleLogin} />
             </Page>
           }
         />
@@ -89,7 +85,7 @@ function App() {
           path="/campgrounds"
           element={
             <Page>
-              <Campgrounds isLoggedIn={isLoggedIn} />
+              <Campgrounds />
             </Page>
           }
         />
@@ -97,10 +93,7 @@ function App() {
           path="/campgrounds/:id"
           element={
             <Page>
-              <CampgroundContent
-                currentUser={currentUser}
-                isLoggedIn={isLoggedIn}
-              />
+              <CampgroundContent currentUser={currentUser} />
             </Page>
           }
         />

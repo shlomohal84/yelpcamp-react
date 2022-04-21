@@ -39,7 +39,7 @@ function Campgrounds({ isLoggedIn }) {
         style={{ height: "3em" }}
       >
         <h5 className="text-center m-0 fw-bold">
-          Found {campgrounds.length} campgrounds
+          Found {campgrounds.length && campgrounds.length} campgrounds
         </h5>
       </div>
       <div>

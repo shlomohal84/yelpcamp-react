@@ -1,7 +1,6 @@
-#map {
+/* #map {
   height: 300px;
-  /* width: 400px */
-}
+} */
 
 .mapboxgl-canvas {
   position: initial !important;

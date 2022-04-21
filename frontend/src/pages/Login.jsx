@@ -5,43 +5,68 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login({ toggleLogin }) {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-  const [state, setState] = useState({
-    username: "",
-    password: "",
-  });
-  const { username, password } = state;
   const navigate = useNavigate();
-  const handleInputChange = evt => {
-    setState(prevState => ({
-      ...prevState,
-      [evt.target.name]: evt.target.value,
-    }));
+
+  const handleLogin = evt => {
+    evt.preventDefault();
+
+    const form = evt.target;
+    const user = {
+      username: form[0].value,
+      password: form[1].value,
+    };
+
+    fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then(res => res.json())
+      .then(data => localStorage.setItem("token", data.token));
+    toggleLogin(user.username);
+    navigate("/campgrounds");
   };
 
-  const onSubmit = async evt => {
-    evt.preventDefault();
-    try {
-      const response = await axios.post("/login", {
-        username,
-        password,
-      });
-      if (!response.data.loginStatus) {
-        console.log(response.data);
-        return toggleLogin(false, {});
-      }
-      toggleLogin(response.data.loginStatus, {
-        username: response.data.username,
-        id: response.data.id,
-      });
-      console.log(response.data);
-      navigate("/campgrounds");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetch("/isUserAuth", {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    })
+      .then(res => res.json())
+      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null));
+
+    // return () => {
+    //     fetch("/isUserAuth", {
+    //       headers: {
+    //         "x-access-token": localStorage.getItem("token"),
+    //       },
+    //     })
+    //   .then(data=> data.isLoggedIn ? )
+    // };
+  }, [navigate]);
+  // const onSubmit = async evt => {
+  //   evt.preventDefault();
+  //   try {
+  //     const response = await axios.post("/login", {
+  //       username,
+  //       password,
+  //     });
+  //     if (!response.data.loginStatus) {
+  //       return toggleLogin(false, {});
+  //     }
+  //     toggleLogin(response.data.loginStatus, {
+  //       username: response.data.username,
+  //       id: response.data.id,
+  //     });
+  //     navigate("/campgrounds");
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">
@@ -58,15 +83,13 @@ function Login({ toggleLogin }) {
                 action="/login"
                 method="POST"
                 className="validated-form"
-                onSubmit={onSubmit}
+                onSubmit={evt => handleLogin(evt)}
               >
                 <div className="mb-3">
                   <label className="form-label" htmlFor="username">
                     Username
                   </label>
                   <input
-                    onChange={handleInputChange}
-                    value={username}
                     className="form-control"
                     type="text"
                     id="username"
@@ -81,8 +104,6 @@ function Login({ toggleLogin }) {
                     Password
                   </label>
                   <input
-                    onChange={handleInputChange}
-                    value={password}
                     className="form-control"
                     type="password"
                     id="password"
@@ -94,6 +115,7 @@ function Login({ toggleLogin }) {
                 <button
                   className="btn btn-success btn-block w-100"
                   type="submit"
+                  value="submit"
                 >
                   Login
                 </button>
