@@ -3,6 +3,7 @@ const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
 geo.setAccessToken(mapBoxToken);
 const { cloudinary } = require("../utils/cloudinaryAPI");
+const usersModel = require("../models/usersModel");
 /* ==> Show all campgrounds */
 module.exports.index = async (req, res) => {
   const campgrounds = await CampgroundsModel.find()
@@ -38,19 +39,23 @@ module.exports.createCampground = async (req, res) => {
         return res.json(err);
       }
       if (data) {
-        const campground = await new CampgroundsModel(req.body.campground);
+        const name = req.body.campground.username;
+        const campground = new CampgroundsModel(req.body.campground);
+        const user = await usersModel.findOne({ username: name });
+        campground.author = user._id;
         campground.geometry = data.features[0].geometry;
         const fileStr = req.body.campground.previewSource;
-        const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
-          folder: `yelpCamp/${campground._id}`,
-          use_filename: true,
-          unique_filename: false,
-        });
-        campground.images.push({
-          url: uploadedResponse.url,
-          filename: uploadedResponse.folder,
-        });
-
+        if (fileStr) {
+          const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
+            folder: `yelpCamp/${campground._id}`,
+            use_filename: true,
+            unique_filename: false,
+          });
+          campground.images.push({
+            url: uploadedResponse.url,
+            filename: uploadedResponse.folder,
+          });
+        }
         await campground.save();
         res.json(campground);
       }
@@ -75,9 +80,10 @@ module.exports.editCampground = async (req, res) => {
           { ...req.body.campground },
           { new: true }
         );
+
         campground.geometry = data.features[0].geometry;
-        if (req.body.campground.previewSource.length) {
-          const fileStr = req.body.campground.previewSource;
+        const fileStr = req.body.campground.previewSource;
+        if (fileStr) {
           const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
             folder: `yelpCamp/${campground._id}`,
             use_filename: true,
@@ -88,7 +94,6 @@ module.exports.editCampground = async (req, res) => {
             filename: uploadedResponse.folder,
           });
         }
-
         await campground.save();
         res.send(campground);
       }

@@ -6,7 +6,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
 
-function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
+function Reviews({ campground, username, isLoggedIn, getApi }) {
+  const author = campground.author.username;
+
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [state, setState] = useState({
@@ -27,7 +29,7 @@ function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
   const handleSubmit = async evt => {
     evt.preventDefault();
     await axios.post(`/campgrounds/${id}/reviews`, {
-      author: currentUser.id,
+      author: username,
       review: { rating, body: input },
     });
     setState(prevState => ({
@@ -47,10 +49,11 @@ function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
   useEffect(() => {
     setLoading(false);
   }, []);
+
   if (loading) return <LoadingSpinner />;
   return (
     <>
-      {isLoggedIn && (
+      {username && (
         <>
           <h2>Leave a review</h2>
           <form
@@ -156,7 +159,7 @@ function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
               </p>
               <h6 className="card-subtitle mb-2 text-muted"> </h6>
               <p className="card-text fst-italic"> {review.body} </p>
-              {currentUser && currentUser.id === review.author._id && (
+              {username === author && (
                 <form
                   onSubmit={handleDelete}
                   method="DELETE"

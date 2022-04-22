@@ -3,7 +3,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function DetailsCard({ campground, currentUser }) {
+function DetailsCard({ campground, username }) {
+  const author = campground.author.username;
   const navigate = useNavigate();
   const handleDelete = async evt => {
     evt.preventDefault();
@@ -24,7 +25,7 @@ function DetailsCard({ campground, currentUser }) {
         <li className="list-group-item text-muted">{campground.location}</li>
         <li className="list-group-item">{`$${campground.price}/night`}</li>
       </ul>
-      {currentUser && currentUser.id === campground.author._id && (
+      {username === author && (
         <div className="card-body">
           <Link
             to={`/campgrounds/${campground._id}/edit`}
@@ -32,7 +33,7 @@ function DetailsCard({ campground, currentUser }) {
           >
             Edit
           </Link>
-          {currentUser && (
+          {username === author && (
             <form
               className="d-inline"
               action={`/campgrounds/${campground._id}`}

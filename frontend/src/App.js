@@ -26,11 +26,20 @@ function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [state, setState] = useState({
-    currentUser: {},
     loading: true,
     username: null,
   });
-  const { currentUser, loading, username } = state;
+  const { loading, username } = state;
+
+  const toggleLogin = useCallback(
+    username => {
+      setState(prevState => ({
+        ...prevState,
+        username: username,
+      }));
+    },
+    [setState]
+  );
 
   useEffect(() => {
     setState(prevState => ({
@@ -42,15 +51,6 @@ function App() {
   /* Hooks ==> */
 
   /* <== Functions */
-  const toggleLogin = useCallback(
-    username => {
-      setState(prevState => ({
-        ...prevState,
-        username: username,
-      }));
-    },
-    [setState]
-  );
 
   /* Functions ==> */
   if (loading) {
@@ -60,7 +60,6 @@ function App() {
     <div className="App">
       <Navbar
         pathname={pathname}
-        currentUser={currentUser}
         toggleLogin={toggleLogin}
         username={username}
         //
@@ -79,7 +78,7 @@ function App() {
           path="/login"
           element={
             <Page>
-              <Login currentUser={currentUser} toggleLogin={toggleLogin} />
+              <Login toggleLogin={toggleLogin} />
             </Page>
           }
         />
@@ -95,7 +94,7 @@ function App() {
           path="/campgrounds/:id"
           element={
             <Page>
-              <CampgroundContent currentUser={currentUser} />
+              <CampgroundContent username={username} />
             </Page>
           }
         />
@@ -103,7 +102,7 @@ function App() {
           path="/campgrounds/:id/edit"
           element={
             <Page>
-              <EditCampground currentUser={currentUser} />
+              <EditCampground username={username} />
             </Page>
           }
         />
@@ -111,7 +110,7 @@ function App() {
           path="/campgrounds/new"
           element={
             <Page>
-              <NewCampground currentUser={currentUser} />
+              <NewCampground username={username} />
             </Page>
           }
         />

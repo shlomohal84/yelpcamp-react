@@ -1,14 +1,17 @@
 const ReviewsModel = require("../models/reviewsModel");
 const CampgroundsModel = require("../models/campgroundsModel");
 const campgroundsModel = require("../models/campgroundsModel");
+const usersModel = require("../models/usersModel");
 
 /* ==> Add a review */
 module.exports.addReview = async (req, res) => {
+  const author = req.body.author;
   const campground = await CampgroundsModel.findById(req.params.id);
   const review = new ReviewsModel(req.body.review);
-  review.author = req.body.author;
+  const user = await usersModel.findOne({ username: author });
+  const userId = user._id;
+  review.author = userId;
   campground.reviews.push(review);
-  console.log(review);
   await review.save();
   await campground.save();
   res.json(review);

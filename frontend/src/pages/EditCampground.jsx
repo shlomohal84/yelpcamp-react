@@ -7,7 +7,7 @@ import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-function EditCampground({ currentUser }) {
+function EditCampground({ username }) {
   //
   const { id } = useParams();
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ function EditCampground({ currentUser }) {
           geometry: {
             type: "Point",
           },
-          author: currentUser.id,
+          username: username,
         },
       });
       if (!response.data) return console.error("Can't find a location!");

@@ -6,7 +6,7 @@ import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-function NewCampground({ currentUser, username }) {
+function NewCampground({ username }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
@@ -70,15 +70,17 @@ function NewCampground({ currentUser, username }) {
       setState(prevState => ({ ...prevState, validated: false }));
     } else {
       evt.preventDefault();
-      if (!previewSource) return;
-      await uploadImage(previewSource);
+      if (previewSource) {
+        await uploadImage(previewSource);
+      }
+
       const response = await axios.post("/campgrounds/new", {
         campground: {
           ...state,
           geometry: {
             type: "Point",
           },
-          author: currentUser.id,
+          username: username,
         },
       });
       if (!response.data) return console.error("Can't find a location!");
@@ -185,7 +187,6 @@ function NewCampground({ currentUser, username }) {
               type="file"
               name="file"
               onChange={handleFileInputChange}
-              required
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>

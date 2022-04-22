@@ -10,7 +10,7 @@ import Reviews from "../components/Reviews";
 import MapBox from "../components/MapBox";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-function CampgroundContent({ currentUser }) {
+function CampgroundContent({ username }) {
   const [campground, setCampground] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
@@ -38,8 +38,8 @@ function CampgroundContent({ currentUser }) {
   return (
     <div className="row">
       <div className="col-6">
-        <CampgroundCarousel campground={campground} />
-        <DetailsCard campground={campground} currentUser={currentUser} />
+        <CampgroundCarousel campground={campground} username={username} />
+        <DetailsCard campground={campground} username={username} />
       </div>
       <div className="col-6">
         {loading ? null : (
@@ -50,11 +50,7 @@ function CampgroundContent({ currentUser }) {
             campground={campground}
           />
         )}
-        <Reviews
-          getApi={getApi}
-          campground={campground}
-          currentUser={currentUser}
-        />
+        <Reviews getApi={getApi} campground={campground} username={username} />
       </div>
     </div>
   );
