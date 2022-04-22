@@ -4,8 +4,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ClusterMapBox from "../components/ClusterMapBox";
+import LoadingSpinner from "../components/LoadingSpinner";
+function Campgrounds() {
+  const [loading, setLoading] = useState(true);
+  const [campgrounds, setCampgrounds] = useState([]);
 
-function Campgrounds({ isLoggedIn }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     async function getApi() {
@@ -24,10 +27,9 @@ function Campgrounds({ isLoggedIn }) {
     }
     getApi();
   }, []);
-  const [campgrounds, setCampgrounds] = useState([]);
-  const [loading, setLoading] = useState(true);
+
   if (loading) {
-    return <p>loading</p>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -43,9 +45,7 @@ function Campgrounds({ isLoggedIn }) {
         </h5>
       </div>
       <div>
-        <Link to={isLoggedIn ? "/campgrounds/new" : "/login"}>
-          Add Campground
-        </Link>
+        <Link to={"/campgrounds/new"}>Add Campground</Link>
       </div>
       {campgrounds.map(campground => {
         return (

@@ -3,7 +3,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function DetailsCard({ campground, currentUser, isLoggedIn }) {
+function DetailsCard({ campground, currentUser }) {
   const navigate = useNavigate();
   const handleDelete = async evt => {
     evt.preventDefault();
@@ -32,7 +32,7 @@ function DetailsCard({ campground, currentUser, isLoggedIn }) {
           >
             Edit
           </Link>
-          {(currentUser || isLoggedIn) && (
+          {currentUser && (
             <form
               className="d-inline"
               action={`/campgrounds/${campground._id}`}

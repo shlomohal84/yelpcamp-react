@@ -5,6 +5,7 @@ import mapboxgl from "mapbox-gl";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./component_styles/MapBox.css";
+import LoadingSpinner from "./LoadingSpinner";
 
 function MapBox({ lat, lng, zoom }) {
   mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -29,6 +30,13 @@ function MapBox({ lat, lng, zoom }) {
       setLoading(false);
     }
   }, [lat, lng, zoom]);
+
+  if (loading)
+    return (
+      <>
+        <div ref={mapContainer} />
+      </>
+    );
 
   return <div ref={mapContainer} id="map" className="mapboxgl-map" />;
 }

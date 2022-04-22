@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-function NewCampground({ currentUser }) {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+function NewCampground({ currentUser, username }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     title: "",
     location: "",
@@ -88,6 +87,24 @@ function NewCampground({ currentUser }) {
     }
     setState(prevState => ({ ...prevState, validated: true }));
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    const getAuth = async () => {
+      try {
+        fetch("/isUserAuth", {
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        })
+          .then(res => res.json())
+          .then(data => (!data.isLoggedIn ? navigate("/login") : null));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getAuth();
+  }, [navigate]);
 
   return (
     <div className="NewCampground row">

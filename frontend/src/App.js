@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 // import axios from "axios";
 
@@ -36,19 +36,21 @@ function App() {
     setState(prevState => ({
       ...prevState,
       loading: false,
-      currentCampgroundId: "",
     }));
   }, []);
 
   /* Hooks ==> */
 
   /* <== Functions */
-  const toggleLogin = username => {
-    setState(prevState => ({
-      ...prevState,
-      username: username,
-    }));
-  };
+  const toggleLogin = useCallback(
+    username => {
+      setState(prevState => ({
+        ...prevState,
+        username: username,
+      }));
+    },
+    [setState]
+  );
 
   /* Functions ==> */
   if (loading) {

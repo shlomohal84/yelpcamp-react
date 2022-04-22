@@ -1,6 +1,5 @@
 // User registration page
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Register({ toggleLogin }) {
@@ -52,7 +51,7 @@ function Register({ toggleLogin }) {
       },
     })
       .then(res => res.json())
-      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null));
+      .then(data => (data.isLoggedIn ? () => navigate("/campgrounds") : null));
   }, [navigate]);
 
   return (

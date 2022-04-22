@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 function Navbar({ pathname, username, toggleLogin }) {
   const navigate = useNavigate();
-
   const logout = async () => {
     toggleLogin(null);
     localStorage.removeItem("token");
@@ -22,8 +21,9 @@ function Navbar({ pathname, username, toggleLogin }) {
       .then(data =>
         data.isLoggedIn ? toggleLogin(data.username) : toggleLogin(null)
       );
-    return () => toggleLogin(prevState => prevState);
-  }, []);
+
+    // return () => toggleLogin(prevState => prevState);
+  }, [toggleLogin]);
 
   return pathname !== "/" ? (
     <nav

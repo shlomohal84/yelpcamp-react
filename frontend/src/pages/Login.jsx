@@ -1,12 +1,11 @@
 //User login page
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
+import LoadingSpinner from "../components/LoadingSpinner";
 function Login({ toggleLogin }) {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const handleLogin = evt => {
     evt.preventDefault();
 
@@ -32,16 +31,18 @@ function Login({ toggleLogin }) {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     fetch("/isUserAuth", {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
     })
       .then(res => res.json())
-      .then(data => (data.isLoggedIn ? navigate("/campgrounds") : null));
-  }, [navigate]);
+      .then(data => (data.isLoggedIn ? toggleLogin(data.username) : null));
+  }, [toggleLogin]);
 
+  // if (loading) {
+  //   return <LoadingSpinner />;
+  // }
   return (
     <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
       <div className="row">

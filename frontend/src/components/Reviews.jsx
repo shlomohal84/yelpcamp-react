@@ -1,11 +1,13 @@
 // Campground Reviews container
 // on the right column of campground content
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import LoadingSpinner from "./LoadingSpinner";
 
 function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [state, setState] = useState({
     rating: 1,
@@ -41,6 +43,11 @@ function Reviews({ campground, currentUser, isLoggedIn, getApi }) {
     await axios.delete(`/campgrounds/${id}/reviews/${reviewId}`);
     getApi();
   };
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+  if (loading) return <LoadingSpinner />;
   return (
     <>
       {isLoggedIn && (

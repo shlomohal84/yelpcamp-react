@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 
 import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function EditCampground({ currentUser }) {
   //
@@ -28,6 +29,7 @@ function EditCampground({ currentUser }) {
     previewSource,
     validated,
     images,
+    loading,
   } = state;
 
   useEffect(() => {
@@ -35,8 +37,7 @@ function EditCampground({ currentUser }) {
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
-        const { title, location, price, description, previewSource, images } =
-          response.data;
+        const { title, location, price, description, images } = response.data;
         setState(prevState => ({
           ...prevState,
           title,
@@ -119,6 +120,7 @@ function EditCampground({ currentUser }) {
     setState(prevState => ({ ...prevState, validated: true }));
   };
 
+  if (loading) return <LoadingSpinner />;
   return (
     <div className="EditCampground row">
       <h1 className="text-center">Edit Campground</h1>
