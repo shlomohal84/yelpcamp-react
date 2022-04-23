@@ -1,6 +1,7 @@
 const CampgroundsModel = require("../models/campgroundsModel");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
+const mongoose = require("mongoose");
 geo.setAccessToken(mapBoxToken);
 const { cloudinary } = require("../utils/cloudinaryAPI");
 const usersModel = require("../models/usersModel");
@@ -16,6 +17,8 @@ module.exports.index = async (req, res) => {
 
 /* ==> Show a single campground content */
 module.exports.campgroundContent = async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id))
+    return res.json({ "error": true });
   const campground = await CampgroundsModel.findById(req.params.id)
     .populate({
       path: "reviews",
@@ -24,6 +27,8 @@ module.exports.campgroundContent = async (req, res) => {
       },
     })
     .populate("author");
+  if (!campground) return res.json({ "error": true });
+
   res.json(campground);
 };
 /* <== Show a single campground content */
@@ -95,7 +100,7 @@ module.exports.editCampground = async (req, res) => {
           });
         }
         await campground.save();
-        res.send(campground);
+        res.json(campground);
       }
     }
   );

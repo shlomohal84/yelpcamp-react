@@ -9,13 +9,23 @@ const campgroundsRoutes = require("./routes/campgroundsRoutes");
 const reviewsRoutes = require("./routes/reviewsRoutes");
 const usersRoutes = require("./routes/usersRoutes");
 const { cloudinary } = require("./utils/cloudinaryAPI");
-
+const { ExpressError } = require("./utils/ExpressError");
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/", usersRoutes);
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/reviews", reviewsRoutes);
+
+app.all("*", (req, res, next) => {
+  next(new ExpressError("Page not found!", 404));
+});
+
+app.use((err, req, res, next) => {
+  const { message = "Something went wrong!", statusCode = 500 } = err;
+  if (!err.message) err.message = "Oh no something went wrong!";
+  res.status(statusCode).json({ message: err });
+});
 
 app.listen(port, () =>
   console.log(`>> Server loaded successfully on port ${port}`)

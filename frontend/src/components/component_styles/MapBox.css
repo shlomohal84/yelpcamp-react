@@ -2,7 +2,11 @@
   height: 300px;
 } */
 
+.mapboxgl-map {
+  height: 250px !important
+}
+
 .mapboxgl-canvas {
-  position: initial !important;
+  /* position: initial !important; */
   height: 250px !important
 }

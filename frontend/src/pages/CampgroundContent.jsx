@@ -1,7 +1,7 @@
 // Campground content page
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import CampgroundCarousel from "../components/CampgroundCarousel";
@@ -11,19 +11,28 @@ import MapBox from "../components/MapBox";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 function CampgroundContent({ username }) {
+  const navigate = useNavigate();
   const [campground, setCampground] = useState({});
+  const [coordinates, setCoordinates] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const getApi = useCallback(async () => {
-    try {
-      const response = await axios.get(`/campgrounds/${id}`);
-      setCampground(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+  const getApi = useCallback(
+    async () => {
+      try {
+        const response = await axios.get(`/campgrounds/${id}`);
+        if (response.data.error) return navigate("/*");
+        setCampground(response.data);
+        setCoordinates(response.data.geometry.coordinates);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [id, navigate],
+    navigate
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,7 +42,6 @@ function CampgroundContent({ username }) {
   if (loading) {
     return <LoadingSpinner />;
   }
-  const { coordinates } = campground.geometry;
 
   return (
     <div className="row">

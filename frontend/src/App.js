@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 // import axios from "axios";
 
 import Page from "./pages/Page";
@@ -18,6 +24,7 @@ import "bootstrap";
 import "./components/component_styles/starability-all.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
+import Error404Page from "./pages/Error404Page";
 /*STYLES IMPORTS <== */
 
 /* <== COMPONENT DECLARATION*/
@@ -114,6 +121,8 @@ function App() {
             </Page>
           }
         />
+        <Route path="*" element={<Navigate to="error404" replace={true} />} />
+        <Route path="error404" element={<Error404Page />} />
       </Routes>
       <Footer pathname={pathname} />
     </div>

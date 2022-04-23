@@ -56,11 +56,13 @@ function Navbar({ pathname, username, toggleLogin }) {
                 Campgrounds
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link text-white" to="/campgrounds/new">
-                New Campground
-              </Link>
-            </li>
+            {username ? (
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/campgrounds/new">
+                  Create Campground
+                </Link>
+              </li>
+            ) : null}
           </ul>
           <ul className="navbar-nav ms-auto">
             {username ? (

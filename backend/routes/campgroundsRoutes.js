@@ -15,7 +15,7 @@ router.route("/new").post(checkDbStatus, catchAsync(createCampground));
 
 router
   .route("/:id")
-  .get(campgroundContent)
+  .get(catchAsync(campgroundContent))
   .put(checkDbStatus, catchAsync(editCampground))
   .delete(catchAsync(deleteCampground));
 
