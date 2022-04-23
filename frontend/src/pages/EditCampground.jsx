@@ -1,6 +1,6 @@
 // Edit a campground page
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 
@@ -31,9 +31,25 @@ function EditCampground({ username }) {
     images,
     loading,
   } = state;
+  const getAuth = useCallback(async () => {
+    try {
+      fetch("/isUserAuth", {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      })
+        .then(res => res.json())
+        .then(data => (!data.isLoggedIn ? navigate("/login") : null));
+      return;
+    } catch (error) {
+      console.error(error);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    getAuth();
     async function getApi() {
       try {
         const response = await axios.get(`/campgrounds/${id}`);
@@ -53,7 +69,7 @@ function EditCampground({ username }) {
       }
     }
     getApi();
-  }, [id]);
+  }, [id, getAuth]);
 
   /* ==> Config file upload */
   const handleFileInputChange = evt => {
@@ -165,7 +181,7 @@ function EditCampground({ username }) {
                 id="inputGroupPrepend"
                 className="input-group-text"
               >
-                @
+                $
               </InputGroup.Text>
               <FormControl
                 type="text"

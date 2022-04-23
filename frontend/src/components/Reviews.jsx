@@ -53,23 +53,56 @@ function Reviews({ campground, username, isLoggedIn, getApi }) {
   if (loading) return <LoadingSpinner />;
   return (
     <>
+      {campground.reviews.map((review, idx) => {
+        return (
+          <div className="card mb-3" key={idx}>
+            <div className="card-body">
+              <h5 className="card-title">Author: {review.author.username}</h5>
+              <p className="starability-result" data-rating={review.rating}>
+                Rated: 3 stars
+              </p>
+              <h6 className="card-subtitle mb-2 text-muted"> </h6>
+              <p className="card-text fst-italic"> {review.body} </p>
+              {username === author && (
+                <form
+                  onSubmit={handleDelete}
+                  method="DELETE"
+                  action={`/campgrounds/${id}/reviews/${review._id}`}
+                >
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() =>
+                      setState(prevState => ({
+                        ...prevState,
+                        reviewId: review._id,
+                      }))
+                    }
+                  >
+                    Delete
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        );
+      })}
       {username && (
-        <>
-          <h2>Leave a review</h2>
+        <div className="container mt-5 mb-3">
+          <h3 className="mt-0 mb-1 text-center">Leave a review</h3>
           <form
             action={`/campgrounds/${id}/reviews`}
             onSubmit={handleSubmit}
             method="POST"
-            className="mb-3 validated-form"
+            className="validated-form"
             noValidate
             required
           >
-            <div className="mb-3">
-              <fieldset className="starability-basic">
+            <div className="mb-2" style={{ height: "2em" }}>
+              <fieldset className="starability-basic mx-auto">
                 <input
                   type="radio"
                   id="no-rate"
-                  className="input-no-rate"
+                  className="input-no-rate "
                   name="review[rating]"
                   value={1}
                   aria-label="No rating."
@@ -128,10 +161,7 @@ function Reviews({ campground, username, isLoggedIn, getApi }) {
               </fieldset>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label" htmlFor="body">
-                Review text:
-              </label>
+            <div className="mb-1">
               <textarea
                 value={input}
                 onChange={handleInput}
@@ -144,44 +174,12 @@ function Reviews({ campground, username, isLoggedIn, getApi }) {
               ></textarea>
               <div className="valid-feedback">Looks good!</div>
             </div>
-            <button className="btn btn-success">Submit</button>
-          </form>
-        </>
-      )}
-
-      {campground.reviews.map((review, idx) => {
-        return (
-          <div className="card mb-3" key={idx}>
-            <div className="card-body">
-              <h5 className="card-title">Author: {review.author.username}</h5>
-              <p className="starability-result" data-rating={review.rating}>
-                Rated: 3 stars
-              </p>
-              <h6 className="card-subtitle mb-2 text-muted"> </h6>
-              <p className="card-text fst-italic"> {review.body} </p>
-              {username === author && (
-                <form
-                  onSubmit={handleDelete}
-                  method="DELETE"
-                  action={`/campgrounds/${id}/reviews/${review._id}`}
-                >
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() =>
-                      setState(prevState => ({
-                        ...prevState,
-                        reviewId: review._id,
-                      }))
-                    }
-                  >
-                    Delete
-                  </button>
-                </form>
-              )}
+            <div className="d-flex justify-content-center mt-0">
+              <button className="btn btn-success">Submit</button>
             </div>
-          </div>
-        );
-      })}
+          </form>
+        </div>
+      )}
     </>
   );
 }
