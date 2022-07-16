@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const bcrypt = require("bcrypt");
 
-const UsersModel = new Schema(
+const UserModel = new Schema(
   {
     email: {
       type: String,
@@ -18,16 +18,20 @@ const UsersModel = new Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = model("User", UsersModel);
+module.exports = model("User", UserModel);
 
 // /* ==> Hash password on new user registration */
-// UsersModel.pre("save", function (next) {
+// UserModel.pre("save", function (next) {
 //   const user = this;
 //   // only hash the password if it has been modified (or is new)
 //   if (!user.isModified("password")) return next();
@@ -44,7 +48,7 @@ module.exports = model("User", UsersModel);
 // /* <== Hash password on new user registration */
 
 // /* ==> Validate password on user login */
-// UsersModel.methods.comparePassword = function (candidatePassword, cb) {
+// UserModel.methods.comparePassword = function (candidatePassword, cb) {
 //   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
 //     if (err) return cb(err);
 //     cb(null, isMatch);

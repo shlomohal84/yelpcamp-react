@@ -1,13 +1,13 @@
-const CampgroundsModel = require("../models/campgroundsModel");
+const CampgroundModel = require("../models/campgroundModel");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
 const mongoose = require("mongoose");
 geo.setAccessToken(mapBoxToken);
 const { cloudinary } = require("../utils/cloudinaryAPI");
-const usersModel = require("../models/usersModel");
+const UserModel = require("../models/UserModel");
 /* ==> Show all campgrounds */
 module.exports.index = async (req, res) => {
-  const campgrounds = await CampgroundsModel.find()
+  const campgrounds = await CampgroundModel.find()
     .sort({ _id: -1 })
     .populate("reviews");
   // .limit(20);
@@ -19,7 +19,7 @@ module.exports.index = async (req, res) => {
 module.exports.campgroundContent = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id))
     return res.json({ "error": true });
-  const campground = await CampgroundsModel.findById(req.params.id)
+  const campground = await CampgroundModel.findById(req.params.id)
     .populate({
       path: "reviews",
       populate: {
@@ -45,8 +45,8 @@ module.exports.createCampground = async (req, res) => {
       }
       if (data) {
         const name = req.body.campground.username;
-        const campground = new CampgroundsModel(req.body.campground);
-        const user = await usersModel.findOne({ username: name });
+        const campground = new CampgroundModel(req.body.campground);
+        const user = await UserModel.findOne({ username: name });
         campground.author = user._id;
         campground.geometry = data.features[0].geometry;
         const fileStr = req.body.campground.previewSource;
@@ -80,7 +80,7 @@ module.exports.editCampground = async (req, res) => {
         return res.json(err);
       }
       if (data) {
-        const campground = await CampgroundsModel.findByIdAndUpdate(
+        const campground = await CampgroundModel.findByIdAndUpdate(
           req.params.id,
           { ...req.body.campground },
           { new: true }
@@ -110,7 +110,7 @@ module.exports.editCampground = async (req, res) => {
 /* ==> Delete a campground */
 module.exports.deleteCampground = async (req, res) => {
   const { id } = req.params;
-  const campgrounds = await CampgroundsModel.findByIdAndDelete(id);
+  const campgrounds = await CampgroundModel.findByIdAndDelete(id);
   res.json(id);
 };
 /* <== Delete a campground */

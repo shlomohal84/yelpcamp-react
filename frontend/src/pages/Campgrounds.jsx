@@ -15,7 +15,7 @@ function Campgrounds() {
       try {
         const response = await axios({
           method: "GET",
-          url: "/campgrounds",
+          url: "/api/campgrounds",
         });
         setCampgrounds(response.data);
       } catch (error) {

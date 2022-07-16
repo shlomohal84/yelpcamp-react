@@ -11,7 +11,7 @@ async function connectDB() {
         .cyan
     );
   } catch (error) {
-    throw new Error(error);
+    console.log(new Error(error));
   }
 }
 

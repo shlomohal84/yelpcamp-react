@@ -5,9 +5,9 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const mongoose = require("mongoose");
-const User = require("../models/usersModel");
-const Campground = require("../models/campgroundsModel");
-const Review = require("../models/reviewsModel");
+const UserModel = require("../models/UserModel");
+const Campground = require("../models/campgroundModel");
+const Review = require("../models/ReviewModel");
 const cities = require("./cities");
 const { places, descriptors } = require("./seedHelpers");
 const lorem =

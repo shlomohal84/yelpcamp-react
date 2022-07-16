@@ -20,7 +20,7 @@ function CampgroundContent({ username }) {
   const getApi = useCallback(
     async () => {
       try {
-        const response = await axios.get(`/campgrounds/${id}`);
+        const response = await axios.get(`/api/campgrounds/${id}`);
         if (response.data.error) return navigate("/*");
         setCampground(response.data);
         setCoordinates(response.data.geometry.coordinates);

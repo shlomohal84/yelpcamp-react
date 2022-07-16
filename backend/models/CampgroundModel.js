@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-const ReviewsModel = require("./reviewsModel");
+const ReviewModel = require("./ReviewModel");
 
 /* ==> Schema for image cloud uploads */
 const ImageSchema = new Schema({
@@ -49,7 +49,7 @@ const CampgroundSchema = new Schema(
 /* ==> Method deleting all reviews under deleted campground */
 CampgroundSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
-    await ReviewsModel.deleteMany({
+    await ReviewModel.deleteMany({
       _id: {
         $in: doc.reviews,
       },

@@ -5,6 +5,7 @@ import {
   useLocation,
   useNavigate,
   Navigate,
+  useParams,
 } from "react-router-dom";
 // import axios from "axios";
 
@@ -30,23 +31,26 @@ import Error404Page from "./pages/Error404Page";
 /* <== COMPONENT DECLARATION*/
 function App() {
   /* <== Hooks */
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+
+  const routerHooks = {
+    location: useLocation(),
+    params: useParams(),
+    navigate: useNavigate(),
+  };
   const [state, setState] = useState({
     loading: true,
-    username: null,
   });
-  const { loading, username } = state;
+  const { username } = state;
 
-  const toggleLogin = useCallback(
-    username => {
-      setState(prevState => ({
-        ...prevState,
-        username: username,
-      }));
-    },
-    [setState]
-  );
+  // const toggleLogin = useCallback(
+  //   username => {
+  //     setState(prevState => ({
+  //       ...prevState,
+  //       username: username,
+  //     }));
+  //   },
+  //   [setState]
+  // );
 
   useEffect(() => {
     setState(prevState => ({
@@ -60,33 +64,28 @@ function App() {
   /* <== Functions */
 
   /* Functions ==> */
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
+  // if (loading) {
+  //   return <h1>Loading...</h1>;
+  // }
   return (
     <div className="App">
-      <Navbar
-        pathname={pathname}
-        toggleLogin={toggleLogin}
-        username={username}
-        //
-      />
+      <Navbar {...routerHooks} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
           path="/register"
           element={
             <Page>
-              <Register toggleLogin={toggleLogin} />
+              <Register />
             </Page>
           }
         />
         <Route
           path="/login"
           element={
-            <Page>
-              <Login toggleLogin={toggleLogin} />
-            </Page>
+            // <Page>
+            <Login />
+            // </Page>
           }
         />
         <Route
@@ -101,7 +100,7 @@ function App() {
           path="/campgrounds/:id"
           element={
             <Page>
-              <CampgroundContent username={username} />
+              <CampgroundContent />
             </Page>
           }
         />
@@ -109,7 +108,7 @@ function App() {
           path="/campgrounds/:id/edit"
           element={
             <Page>
-              <EditCampground username={username} />
+              <EditCampground />
             </Page>
           }
         />
@@ -117,14 +116,14 @@ function App() {
           path="/campgrounds/new"
           element={
             <Page>
-              <NewCampground username={username} />
+              <NewCampground />
             </Page>
           }
         />
-        <Route path="*" element={<Navigate to="error404" replace={true} />} />
-        <Route path="error404" element={<Error404Page />} />
+        {/* <Route path="*" element={<Error404Page />} /> */}
+        {/* <Route path="error404" element={<Error404Page />} /> */}
       </Routes>
-      <Footer pathname={pathname} />
+      <Footer /* pathname={pathname} */ />
     </div>
   );
 }

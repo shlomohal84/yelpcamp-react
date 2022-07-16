@@ -6,9 +6,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
 
-function Reviews({ campground, username, isLoggedIn, getApi }) {
-  const author = campground.author.username;
-
+function Reviews({ campground, username, getApi }) {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [state, setState] = useState({
@@ -63,7 +61,7 @@ function Reviews({ campground, username, isLoggedIn, getApi }) {
               </p>
               <h6 className="card-subtitle mb-2 text-muted"> </h6>
               <p className="card-text fst-italic"> {review.body} </p>
-              {username === author && (
+              {review.author.username === username && (
                 <form
                   onSubmit={handleDelete}
                   method="DELETE"

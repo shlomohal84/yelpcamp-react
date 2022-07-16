@@ -2,9 +2,9 @@
 
 const mongoose = require("mongoose");
 const { Schema, model } = require("mongoose");
-const CampgroundsModel = require("../models/campgroundsModel");
-const ReviewsModel = require("../models/reviewsModel");
-const UsersModel = require("../models/usersModel");
+const CampgroundModel = require("../models/campgroundModel");
+const ReviewModel = require("../models/ReviewModel");
+const UserModel = require("../models/UserModel");
 const bcrypt = require("bcrypt");
 const fakeSecret =
   "0acb42734b9e069f1a5401d8c26b582b9e4b89476ad10c74ae2ba967d2fbf5091b4f4702d04f20a4b6f0dfdc605bc57c3ce543b6d786b65a9f28dcc03c9a35b6";
@@ -15,14 +15,14 @@ mongoose.connect(
   error => console.log(error)
 );
 async function run() {
-  const camp = await CampgroundsModel.find();
+  const camp = await CampgroundModel.find();
 
   console.log(camp[1]);
   // await camp.save();
-  // const reviews = await ReviewsModel.findByIdAndDelete(
+  // const reviews = await ReviewModel.findByIdAndDelete(
   //   "625edee4a12db400a62f6e61"
   // );
-  // console.log(await ReviewsModel.find());
+  // console.log(await ReviewModel.find());
 
   // console.log(reviews);
   // await camp.save();

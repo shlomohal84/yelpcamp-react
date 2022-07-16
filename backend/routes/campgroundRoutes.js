@@ -1,5 +1,4 @@
 const express = require("express");
-const catchAsync = require("../middleware/catchAsync");
 const router = express.Router();
 const {
   index,
@@ -7,16 +6,16 @@ const {
   campgroundContent,
   editCampground,
   deleteCampground,
-} = require("../controllers/campgroundsController");
+} = require("../controllers/CampgroundController");
 const checkDbStatus = require("../middleware/checkDbStatus");
 router.route("/").get(index);
 
-router.route("/new").post(checkDbStatus, catchAsync(createCampground));
+router.route("/new").post(checkDbStatus, createCampground);
 
 router
   .route("/:id")
-  .get(catchAsync(campgroundContent))
-  .put(checkDbStatus, catchAsync(editCampground))
-  .delete(catchAsync(deleteCampground));
+  .get(campgroundContent)
+  .put(checkDbStatus, editCampground)
+  .delete(deleteCampground);
 
 module.exports = router;

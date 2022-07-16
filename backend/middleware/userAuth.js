@@ -1,22 +1,24 @@
 // User authorization and tokens
 const jwt = require("jsonwebtoken");
+const { jwtSecret } = require("../config/keys");
 
-module.exports.verifyJWT = function (req, res, next) {
-  const token = req.headers["x-access-token"]?.split(" ")[1];
+module.exports.authenticateJWT = (req, res, next) => {
+  const token = req.cookies.token;
 
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err)
-        return req.json({
-          isLoggedIn: false,
-          message: "Failed to authenticate",
-        });
-      req.user = {};
-      req.user.id = decoded.id;
-      req.user.username = decoded.username;
-      next();
+  if (!token) {
+    return res.status(401).json({
+      errorMessage: "No token. Authorization denied",
     });
-  } else {
-    res.json({ message: "Incorrect token given", isLoggedIn: false });
+  }
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    req.user = decoded.user;
+    next();
+  } catch (err) {
+    console.log("jwt error", err);
+    res.status(401).json({
+      errorMessage: "Invalid token",
+    });
   }
 };
