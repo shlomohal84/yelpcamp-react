@@ -1,4 +1,5 @@
 const express = require("express");
+const { authenticateJWT } = require("../middleware/authenticator");
 const router = express.Router();
 const {
   index,
@@ -8,14 +9,15 @@ const {
   deleteCampground,
 } = require("../controllers/CampgroundController");
 const checkDbStatus = require("../middleware/checkDbStatus");
+//
 router.route("/").get(index);
 
-router.route("/new").post(checkDbStatus, createCampground);
+router.route("/new").post(authenticateJWT, createCampground);
 
 router
   .route("/:id")
   .get(campgroundContent)
   .put(checkDbStatus, editCampground)
-  .delete(deleteCampground);
+  .delete(checkDbStatus, deleteCampground);
 
 module.exports = router;

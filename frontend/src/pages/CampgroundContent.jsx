@@ -1,64 +1,84 @@
 // Campground content page
 
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getCampgroundContent } from "../api/campgrounds";
 import CampgroundCarousel from "../components/CampgroundCarousel";
 import DetailsCard from "../components/DetailsCard";
 import Reviews from "../components/Reviews";
 import MapBox from "../components/MapBox";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-function CampgroundContent({ username }) {
-  const navigate = useNavigate();
-  const [campground, setCampground] = useState({});
-  const [coordinates, setCoordinates] = useState([]);
-
-  const [loading, setLoading] = useState(true);
+function CampgroundContent() {
+  const [state, setState] = useState({
+    campground: {},
+    author: {},
+    coordinates: [0, 0],
+    images: [],
+    loading: false,
+    errorMessage: null,
+    successMessage: null,
+    reviews: [],
+  });
+  const {
+    campground,
+    author,
+    coordinates,
+    images,
+    reviews,
+    loading,
+    errorMessage,
+    successMessage,
+  } = state;
   const { id } = useParams();
-  const getApi = useCallback(
-    async () => {
-      try {
-        const response = await axios.get(`/api/campgrounds/${id}`);
-        if (response.data.error) return navigate("/*");
-        setCampground(response.data);
-        setCoordinates(response.data.geometry.coordinates);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [id, navigate],
-    navigate
-  );
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    getApi();
-  }, [getApi]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+    const loadCampgroundContent = () => {
+      const data = { id };
+      getCampgroundContent(data)
+        .then(response => {
+          setState(prevState => ({
+            ...prevState,
+            author: response.data.campground.author,
+            coordinates: response.data.campground.geometry.coordinates,
+            campground: response.data.campground,
+            images: response.data.campground.images,
+            reviews: response.data.campground.reviews,
+            loading: false,
+            successMessage: response.data.successMessage,
+            errorMessage: null,
+          }));
+        })
+        .catch(err => {
+          setState(prevState => ({
+            ...prevState,
+            loading: false,
+            errorMessage: err.response.data.errorMessage,
+            successMessage: null,
+          }));
+          console.log(
+            "Campgrounds list loading error:\n",
+            err.response.data.errorMessage
+          );
+        });
+    };
+    loadCampgroundContent();
+  }, [id]);
 
   return (
     <div className="row">
       <div className="col-6">
-        <CampgroundCarousel campground={campground} username={username} />
-        <DetailsCard campground={campground} username={username} />
+        <CampgroundCarousel images={images} />
+        <DetailsCard campground={campground} author={author} />
       </div>
       <div className="col-6">
-        {loading ? null : (
-          <MapBox
-            lng={coordinates[0]}
-            lat={coordinates[1]}
-            zoom={11}
-            campground={campground}
-          />
-        )}
-        <Reviews getApi={getApi} campground={campground} username={username} />
+        <MapBox
+          lng={coordinates[0]}
+          lat={coordinates[1]}
+          zoom={11}
+          campground={campground}
+        />
+        <Reviews reviews={reviews} />
       </div>
     </div>
   );

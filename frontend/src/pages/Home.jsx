@@ -1,8 +1,16 @@
 // landing page
-
 import { Link } from "react-router-dom";
+import { isAuthenticated, logout } from "../helpers/auth";
+
 import "./pages_styles/Home.css";
-function Home({ isLoggedIn }) {
+function Home({ navigate, handleAlert }) {
+  const handleLogout = evt => {
+    evt.preventDefault();
+    handleAlert(null, "Logged out successfully");
+    logout(() => {
+      navigate("/login");
+    });
+  };
   return (
     <main className="Home">
       <header className="mb-auto fs-3 ">
@@ -14,7 +22,7 @@ function Home({ isLoggedIn }) {
           <Link className="nav-link text-light" to="/campgrounds">
             Campgrounds
           </Link>
-          {!isLoggedIn && (
+          {!isAuthenticated() && (
             <>
               <Link className="nav-link text-light" to="/login">
                 Login
@@ -25,8 +33,8 @@ function Home({ isLoggedIn }) {
             </>
           )}
 
-          {isLoggedIn && (
-            <Link className="nav-link text-light" to="/logout">
+          {isAuthenticated() && (
+            <Link className="nav-link text-light" to="" onClick={handleLogout}>
               Logout
             </Link>
           )}

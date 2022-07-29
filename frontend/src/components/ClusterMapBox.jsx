@@ -43,8 +43,8 @@ function ClusterMapBox({ campgrounds }) {
 
   const onClick = evt => {
     const feature = evt.features[0];
-    const clusterId = feature.properties.cluster_id;
-    const circleId = feature.layer.id;
+    const clusterId = feature && feature.properties.cluster_id;
+    const circleId = feature && feature.layer.id;
     const mapboxSource = mapRef.current.getSource("campgrounds");
 
     if (clusterId) {

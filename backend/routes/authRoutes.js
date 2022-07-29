@@ -4,6 +4,7 @@ const {
   loginController,
   registerController,
 } = require("../controllers/authController");
+const { authenticateJWT } = require("../middleware/authenticator");
 const {
   registerValidator,
   loginValidator,

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-const bcrypt = require("bcrypt");
 
 const UserModel = new Schema(
   {
@@ -8,15 +7,18 @@ const UserModel = new Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
     username: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
     password: {
       type: String,
       required: true,
+      min: 4,
     },
     role: {
       type: Number,

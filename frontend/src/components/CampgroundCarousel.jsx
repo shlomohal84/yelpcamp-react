@@ -1,6 +1,6 @@
 // Campground content Images Slider
 
-function CampgroundCarousel({ campground }) {
+function CampgroundCarousel({ images }) {
   return (
     <div
       style={{ height: "300px" }}
@@ -8,9 +8,9 @@ function CampgroundCarousel({ campground }) {
       className="carousel slide"
       data-bs-ride="carousel"
     >
-      {campground.images.length > 1 && (
+      {images.length > 1 && (
         <div className="carousel-indicators">
-          {campground.images.map((image, idx) => (
+          {images.map((image, idx) => (
             <button
               type="button"
               data-bs-target="#campgroundCarousel"
@@ -24,8 +24,8 @@ function CampgroundCarousel({ campground }) {
         </div>
       )}
       <div className="carousel-inner">
-        {campground.images.length ? (
-          campground.images.map((image, idx) => {
+        {images.length ? (
+          images.map((image, idx) => {
             return (
               <div
                 className={`carousel-item ${idx === 0 ? " active" : ""}`}
@@ -50,11 +50,12 @@ function CampgroundCarousel({ campground }) {
               style={{ height: "300px" }}
               src={null}
               className="d-block w-100"
+              alt="Img not found"
             />
           </div>
         )}
       </div>
-      {campground.images.length > 1 && (
+      {images.length > 1 && (
         <>
           <button
             className=" carousel-control-prev"

@@ -6,6 +6,7 @@ require("dotenv").config();
 require("colors");
 const morgan = require("morgan");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./database/db");
 const CampgroundRoutes = require("./routes/CampgroundRoutes");
 const ReviewRoutes = require("./routes/ReviewRoutes");
@@ -15,6 +16,7 @@ const { ExpressError } = require("./utils/ExpressError");
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/auth", authRoutes);

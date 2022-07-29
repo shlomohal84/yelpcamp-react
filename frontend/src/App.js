@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Routes,
   Route,
   useLocation,
   useNavigate,
-  Navigate,
   useParams,
+  Navigate,
 } from "react-router-dom";
-// import axios from "axios";
 
+// component imports
 import Page from "./pages/Page";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -19,13 +19,13 @@ import Campgrounds from "./pages/Campgrounds";
 import NewCampground from "./pages/NewCampground";
 import CampgroundContent from "./pages/CampgroundContent";
 import EditCampground from "./pages/EditCampground";
-import "bootstrap";
-
+import Error404Page from "./pages/Error404Page";
 /*==>STYLES IMPORTS */
+import "bootstrap";
 import "./components/component_styles/starability-all.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
-import Error404Page from "./pages/Error404Page";
+// import Error404Page from "./pages/Error404Page";
 /*STYLES IMPORTS <== */
 
 /* <== COMPONENT DECLARATION*/
@@ -37,28 +37,19 @@ function App() {
     params: useParams(),
     navigate: useNavigate(),
   };
-  const [state, setState] = useState({
-    loading: true,
+
+  const [mainAlert, setMainAlert] = useState({
+    mainError: null,
+    mainSuccess: null,
   });
-  const { username } = state;
 
-  // const toggleLogin = useCallback(
-  //   username => {
-  //     setState(prevState => ({
-  //       ...prevState,
-  //       username: username,
-  //     }));
-  //   },
-  //   [setState]
-  // );
-
-  useEffect(() => {
-    setState(prevState => ({
+  const handleMainAlert = (error, success) => {
+    setMainAlert(prevState => ({
       ...prevState,
-      loading: false,
+      mainError: error,
+      mainSuccess: success,
     }));
-  }, []);
-
+  };
   /* Hooks ==> */
 
   /* <== Functions */
@@ -69,61 +60,48 @@ function App() {
   // }
   return (
     <div className="App">
-      <Navbar {...routerHooks} />
+      <Navbar {...routerHooks} handleAlert={handleMainAlert} />
+
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={<Home {...routerHooks} handleAlert={handleMainAlert} />}
+        />
         <Route
           path="/register"
           element={
             <Page>
-              <Register />
+              <Register {...mainAlert} handleAlert={handleMainAlert} />
             </Page>
           }
         />
         <Route
           path="/login"
           element={
-            // <Page>
-            <Login />
-            // </Page>
-          }
-        />
-        <Route
-          path="/campgrounds"
-          element={
             <Page>
-              <Campgrounds />
+              <Login {...mainAlert} handleAlert={handleMainAlert} />
             </Page>
           }
         />
-        <Route
-          path="/campgrounds/:id"
-          element={
-            <Page>
-              <CampgroundContent />
-            </Page>
-          }
-        />
-        <Route
-          path="/campgrounds/:id/edit"
-          element={
-            <Page>
-              <EditCampground />
-            </Page>
-          }
-        />
-        <Route
-          path="/campgrounds/new"
-          element={
-            <Page>
-              <NewCampground />
-            </Page>
-          }
-        />
-        {/* <Route path="*" element={<Error404Page />} /> */}
-        {/* <Route path="error404" element={<Error404Page />} /> */}
+        <Route path="/campgrounds" element={<Page />}>
+          <Route
+            index
+            element={
+              <Campgrounds {...mainAlert} handleAlert={handleMainAlert} />
+            }
+          />
+          <Route path=":id" element={<CampgroundContent {...routerHooks} />} />
+          <Route path=":id/edit" element={<EditCampground />} />
+          <Route
+            path="new"
+            element={<NewCampground handleAlert={handleMainAlert} />}
+          />
+        </Route>
+
+        <Route path="/error404" element={<Error404Page />} />
+        <Route path="*" element={<Navigate replace to="/error404" />} />
       </Routes>
-      <Footer /* pathname={pathname} */ />
+      <Footer {...routerHooks} />
     </div>
   );
 }

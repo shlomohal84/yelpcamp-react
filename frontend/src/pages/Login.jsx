@@ -7,14 +7,15 @@ import isEmpty from "validator/lib/isEmpty";
 import { login } from "../api/userAuth";
 //component imports
 import LoadingSpinner from "../components/LoadingSpinner";
+import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
 
 //
-function Login() {
+function Login({ handleAlert, mainError, mainSuccess }) {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: "admin",
-    password: "1234",
+    username: "",
+    password: "",
     successMessage: null,
     errorMessage: null,
     loading: false,
@@ -24,11 +25,13 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate("/campgrounds");
+      handleAlert("Already logged in", null);
+      // navigate("/campgrounds");
     }
-  }, [navigate]);
+  }, []);
 
   const handleInputChange = evt => {
+    handleAlert(null, null);
     setFormData(prevState => ({
       ...prevState,
       [evt.target.name]: evt.target.value,
@@ -38,16 +41,18 @@ function Login() {
 
   const handleSubmit = evt => {
     evt.preventDefault();
+    handleAlert(null, null);
+
     // handlePostRegisterMessage("")
 
     if (isEmpty(username) || isEmpty(password)) {
       setFormData(prevState => ({
         ...prevState,
         errorMessage: "All fileds are required",
+        successMessage: null,
       }));
     } else {
-      const data = { username, password };
-
+      const data = { username: username.toLowerCase(), password };
       setFormData(prevState => ({
         ...prevState,
         loading: true,
@@ -57,7 +62,10 @@ function Login() {
         .then(response => {
           setAuthentication(response.data.token, response.data.user);
           if (isAuthenticated()) {
-            console.log(response);
+            handleAlert(
+              null,
+              `Logged in successfuly. Hello ${response.data.user.username}!`
+            );
             navigate("/campgrounds");
           } else {
             setFormData(prevState => ({
@@ -73,7 +81,7 @@ function Login() {
             errorMessage: err.response.data.errorMessage,
           }));
           console.log(
-            "login api function error",
+            "login api function error:",
             err.response.data.errorMessage
           );
         });
@@ -89,48 +97,59 @@ function Login() {
         />
         <div className="card-body">
           <h5 className="card-title">Login</h5>
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="mb-3">
-              <label className="form-label" htmlFor="username">
-                Username
-              </label>
-              <input
-                className="form-control"
-                type="text"
-                name="username"
-                value={username}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label" htmlFor="password">
-                Password
-              </label>
-              <input
-                className="form-control"
-                type="password"
-                name="password"
-                value={password}
-                onChange={handleInputChange}
-              />
-            </div>
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="mb-3">
+                <label className="form-label" htmlFor="username">
+                  Username
+                </label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="username"
+                  value={username}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  className="form-control"
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={handleInputChange}
+                />
+              </div>
 
-            <button className="btn btn-success btn-block w-100" type="submit">
-              Login
-            </button>
-          </form>
+              <button className="btn btn-success btn-block w-100" type="submit">
+                Login
+              </button>
+            </form>
+          )}
         </div>
       </div>
     );
   };
   return (
-    <div className="Login container d-flex justify-content-center align-items-center mt-5 mb-5">
-      <div className="row">
-        <div className="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
-          {loading && <LoadingSpinner />}
-          {renderLoginForm()}
-        </div>
-      </div>
+    <div className="row">
+      {mainError && (
+        <ShowErrorMessage msg={mainError} handleAlert={handleAlert} />
+      )}
+      {mainSuccess && (
+        <ShowSuccessMessage msg={mainSuccess} handleAlert={handleAlert} />
+      )}
+      {errorMessage && (
+        <ShowErrorMessage msg={errorMessage} handleAlert={handleAlert} />
+      )}
+      {successMessage && (
+        <ShowSuccessMessage msg={successMessage} handleAlert={handleAlert} />
+      )}
+      <div className="col-md-6 col-lg-4 mx-auto">{renderLoginForm()}</div>
     </div>
   );
 }

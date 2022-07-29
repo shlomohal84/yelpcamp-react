@@ -15,14 +15,11 @@ module.exports.registerValidator = [
 ];
 
 module.exports.loginValidator = [
-  check("username")
+  check("username" || "password")
     .not()
     .isEmpty()
     .trim()
     .withMessage("All fields are required"),
-  check("password")
-    .isLength({ min: 4 })
-    .withMessage("Password must be at least 6 characters long"),
 ];
 
 module.exports.validatorResult = (req, res, next) => {
