@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
 import { createCampground } from "../api/campgrounds";
 import { isAuthenticated } from "../helpers/auth";
+import isEmpty from "validator/lib/isEmpty";
+import isFloat from "validator/lib/isFloat";
 
 //Component imports
 import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
@@ -13,13 +15,12 @@ import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
 function NewCampground({ handleAlert }) {
   const navigate = useNavigate();
   // const [loading, setLoading] = useState(true);
-  const [state, setState] = useState({
+  const [formData, setFormData] = useState({
     title: "something",
     location: "somewhere",
     price: "59.99",
     description: "efwefwepfew",
     previewSource: "",
-    validated: false,
     successMessage: null,
     errorMessage: null,
   });
@@ -29,11 +30,10 @@ function NewCampground({ handleAlert }) {
     location,
     price,
     description,
-    validated,
     previewSource,
     errorMessage,
     successMessage,
-  } = state;
+  } = formData;
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -43,7 +43,14 @@ function NewCampground({ handleAlert }) {
   }, [navigate, handleAlert]);
 
   const handleInputChange = evt => {
-    setState(prevState => ({
+    if (evt.target.name === "price") {
+      for (let num of evt.target.value) {
+        if (!(num >= 0 || num <= 9 || num === ".")) {
+          return evt.target.value.slice(0, evt.target.value.length - 1);
+        }
+      }
+    }
+    setFormData(prevState => ({
       ...prevState,
       [evt.target.name]: evt.target.value,
     }));
@@ -59,7 +66,7 @@ function NewCampground({ handleAlert }) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setState(prevState => ({
+      setFormData(prevState => ({
         ...prevState,
         previewSource: reader.result,
       }));
@@ -85,62 +92,54 @@ function NewCampground({ handleAlert }) {
 
   const handleSubmit = evt => {
     evt.preventDefault();
-    createCampground()
-      .then(response => {
-        setState(prevState => ({
-          ...prevState,
-          errorMessage: null,
-          successMessage: response.data.successMessage,
-        }));
-        // handleAlert(null, response.data.successMessage);
-        console.log(response.data.successMessage);
-      })
-      .catch(err => {
-        console.log(
-          "createCampground api function error:\n",
-          err.response.data.errorMessage
-        );
-        setState(prevState => ({
-          ...prevState,
-          errorMessage: err.response.data.errorMessage,
-          successMessage: null,
-        }));
-        // handleAlert(err.response.data.errorMessage, null);
-      });
+    if (
+      isEmpty(title) ||
+      isEmpty(location) ||
+      isEmpty(price) ||
+      isEmpty(description)
+    ) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "All inputs are required",
+      }));
+    } else if (!isFloat(price)) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "Invalid price value",
+      }));
+    } else if (price <= 0) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "Price input must be larger than 0 ",
+      }));
+    } else {
+      const data = { title, location, price, description, previewSource };
 
-    /*  else {
-      createCampground()
+      createCampground(data)
         .then(response => {
-          console.log("something something");
+          handleAlert(null, response.data.successMessage);
+          setFormData(prevState => ({
+            ...prevState,
+            successMessage: null,
+            errorMessage: null,
+          }));
+          navigate("/campgrounds/" + response.data.campgroundId);
         })
         .catch(err => {
-          console.log("BAH!!!", err);
-        }); */
-
-    // const form = evt.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   evt.preventDefault();
-    //   evt.stopPropagation();
-    //   setState(prevState => ({ ...prevState, validated: false }));
-    // } else {
-    //   evt.preventDefault();
-    //   if (previewSource) {
-    //     await uploadImage(previewSource);
-    //   }
-    //   const response = await axios.post("/campgrounds/new", {
-    //     campground: {
-    //       ...state,
-    //       geometry: {
-    //         type: "Point",
-    //       },
-    //       username: username,
-    //     },
-    //   });
-    //   if (!response.data) return console.error("Can't find a location!");
-    //   console.log(response.data);
-    //   navigate(`/campgrounds/${response.data._id}`);
-    // }
-    // setState(prevState => ({ ...prevState, validated: true }));
+          console.log(
+            "createCampground api error:\n",
+            err.response.data.errorMessage
+          );
+          setFormData(prevState => ({
+            ...prevState,
+            successMessage: null,
+            errorMessage: err.response.data.errorMessage,
+          }));
+        });
+    }
   };
 
   // useEffect(() => {
@@ -170,8 +169,6 @@ function NewCampground({ handleAlert }) {
       <div className="col-md-6 col-xl-9 mx-auto">
         <Form
           noValidate
-          validated={validated}
-          action="/campgrounds/new"
           method="POST"
           className="needs-validation"
           onSubmit={handleSubmit}

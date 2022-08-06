@@ -10,9 +10,10 @@ const { json } = require("express");
 /* ==> Show all campgrounds */
 module.exports.index = async (req, res) => {
   try {
-    const campgrounds = await CampgroundModel.find().sort({ _id: -1 });
-    // .populate("reviews");
-    // .limit(20);
+    const campgrounds = await CampgroundModel.find()
+      .sort({ _id: -1 })
+      .select(["title", "images", "geometry", "location", "description"]);
+
     res.status(200).json({
       campgrounds,
       successMessage: `Found ${campgrounds.length} campgrounds`,
@@ -50,51 +51,47 @@ module.exports.campgroundContent = async (req, res) => {
 /* ==> Create a new campground */
 module.exports.createCampground = async (req, res) => {
   try {
-    console.log("yay");
-    res.status(200).json({ successMessage: "yay" });
+    geoDataCoords = geo.geocode(
+      "mapbox.places",
+      req.body.location,
+      async (err, data) => {
+        if (err || !data.features[0]) {
+          console.log("Error connecting to mapbox:\n", err);
+          return res
+            .status(400)
+            .json({ errorMessage: "Error connecting to mapbox:\n", err });
+        }
+        if (data) {
+          const campground = new CampgroundModel(req.body);
+          campground.author = req.user._id;
+          campground.geometry = data.features[0].geometry;
+          const fileStr = req.body.previewSource;
+          if (fileStr) {
+            const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
+              folder: `yelpCamp/${campground._id}`,
+              use_filename: true,
+              unique_filename: false,
+            });
+            campground.images.push({
+              url: uploadedResponse.url,
+              filename: uploadedResponse.folder,
+            });
+          }
+          await campground.save();
+          res.status(200).json({
+            campgroundId: campground._id,
+            successMessage: "New campground created successfully!",
+          });
+        }
+      }
+    );
   } catch (err) {
-    console.log("dukes!");
+    console.log("Server error:\n", err);
     res.status(400).json({
-      errorMessage: "dukes!",
+      errorMessage: "Server error",
     });
   }
 };
-// geoDataCoords = geo.geocode(
-//   "mapbox.places",
-//   req.body.campground.location,
-//   async (err, data) => {
-//     if (err || !data.features[0]) {
-//       console.log("Error connecting to mapbox:\n", err);
-//       return res
-//         .status(400)
-//         .json({ errorMessage: "Error connecting to mapbox:\n", err });
-//     }
-//     if (data) {
-//       const name = req.body.campground.username;
-//       const campground = new CampgroundModel(req.body.campground);
-//       const user = await UserModel.findOne({ username: name });
-//       campground.author = user._id;
-//       campground.geometry = data.features[0].geometry;
-//       const fileStr = req.body.campground.previewSource;
-//       if (fileStr) {
-//         const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
-//           folder: `yelpCamp/${campground._id}`,
-//           use_filename: true,
-//           unique_filename: false,
-//         });
-//         campground.images.push({
-//           url: uploadedResponse.url,
-//           filename: uploadedResponse.folder,
-//         });
-//       }
-//       await campground.save();
-//       res.status(200).json({
-//         campground: campground,
-//         successMessage: "New campground created successfully!",
-//       });
-//     }
-//   }
-// );
 
 // };
 // /* <== Create a new campground */

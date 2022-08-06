@@ -15,9 +15,18 @@ const CampgroundSchema = new Schema(
       type: String,
       required: true,
     },
-    location: String,
-    description: String,
-    price: Number,
+    location: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
     images: [ImageSchema],
     geometry: {
       type: {
