@@ -13,11 +13,10 @@ const checkDbStatus = require("../middleware/checkDbStatus");
 router.route("/").get(index);
 
 router.route("/new").post(authenticateJWT, createCampground);
-
 router
   .route("/:id")
   .get(campgroundContent)
-  .put(checkDbStatus, editCampground)
-  .delete(checkDbStatus, deleteCampground);
+  .delete(authenticateJWT, deleteCampground);
+// .put(checkDbStatus, editCampground)
 
 module.exports = router;

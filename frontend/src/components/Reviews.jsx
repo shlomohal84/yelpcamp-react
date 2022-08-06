@@ -6,13 +6,13 @@ import { useParams } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
 
 function Reviews({ reviews }) {
-  // const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [state, setState] = useState({
     rating: 1,
     input: "",
     reviewId: "",
     loading: "",
+    rev: null,
   });
   const { rating, input, reviewId, loading } = state;
 

@@ -83,7 +83,7 @@ function Register({ handleAlert, mainError, mainSuccess }) {
 
       register(data)
         .then(response => {
-          console.log("axios sign up success", response);
+          // console.log("axios sign up success", response);
           setFormData(prevState => ({
             ...prevState,
             username: "",

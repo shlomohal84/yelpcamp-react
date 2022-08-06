@@ -5,9 +5,9 @@ const dbName = "yelpCamp";
 
 async function connectDB() {
   try {
-    const connect = await mongoose.connect(/* remoteDB  ||  */ localDB);
+    const connect = await mongoose.connect(`${/* remoteDB  ||  */ localDB}`);
     console.log(
-      `>> MONGODB connected successfully on ${connect.connection.host}/${dbName}`
+      `>> MongoDB connected successfully on ${connect.connection.host}/${dbName}`
         .cyan
     );
   } catch (error) {

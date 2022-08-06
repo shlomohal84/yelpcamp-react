@@ -3,9 +3,11 @@ import Map, { Marker } from "react-map-gl";
 import "./component_styles/MapBox.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-function MapBox({ lng, lat, zoom }) {
+function MapBox({ coordinates, zoom }) {
+  // const coordinates = geometry && geometry.coordinates;
+  const lng = coordinates[0];
+  const lat = coordinates[1];
   const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
-
   return (
     <>
       <Map
@@ -21,7 +23,7 @@ function MapBox({ lng, lat, zoom }) {
         // id="map"
         // className="mapboxgl-map"
       >
-        <Marker longitude={lng} latitude={lat} zoom={zoom}></Marker>
+        <Marker longitude={lng} latitude={lat} zoom={zoom && zoom}></Marker>
       </Map>
     </>
   );

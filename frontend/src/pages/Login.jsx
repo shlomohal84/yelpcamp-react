@@ -26,9 +26,9 @@ function Login({ handleAlert, mainError, mainSuccess }) {
   useEffect(() => {
     if (isAuthenticated()) {
       handleAlert("Already logged in", null);
-      // navigate("/campgrounds");
+      navigate("/campgrounds");
     }
-  }, []);
+  }, [handleAlert, navigate]);
 
   const handleInputChange = evt => {
     handleAlert(null, null);

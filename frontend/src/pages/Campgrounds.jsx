@@ -89,8 +89,8 @@ function Campgrounds({ mainError, mainSuccess, handleAlert }) {
 
       <ClusterMapBox campgrounds={campgrounds} />
       <div className="mt-3 w-50 mx-auto">
-        {errorMessage && <ShowErrorMessage msg={"No campgrounds found"} />}
-        {successMessage && <ShowSuccessMessage msg={successMessage} />}
+        {/* {errorMessage && <ShowErrorMessage msg={"No campgrounds found"} />}
+        {successMessage && <ShowSuccessMessage msg={successMessage} />} */}
         {/* <h5 className="text-center m-0 fw-bold">
           Found {campgrounds.length && campgrounds.length} campgrounds
         </h5> */}

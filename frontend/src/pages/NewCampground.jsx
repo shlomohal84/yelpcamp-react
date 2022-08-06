@@ -35,12 +35,12 @@ function NewCampground({ handleAlert }) {
     successMessage,
   } = state;
 
-  // useEffect(() => {
-  //   if (!isAuthenticated()) {
-  //     handleAlert("Unauthorized. Please login", null);
-  //     navigate("/login");
-  //   }
-  // }, [navigate, handleAlert]);
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      handleAlert("Unauthorized. Please login", null);
+      navigate("/login");
+    }
+  }, [navigate, handleAlert]);
 
   const handleInputChange = evt => {
     setState(prevState => ({
@@ -85,7 +85,7 @@ function NewCampground({ handleAlert }) {
 
   const handleSubmit = evt => {
     evt.preventDefault();
-    createCampground({})
+    createCampground()
       .then(response => {
         setState(prevState => ({
           ...prevState,

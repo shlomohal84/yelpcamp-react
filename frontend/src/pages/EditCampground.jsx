@@ -3,11 +3,11 @@
 import { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
-
+import { isAuthenticated, isUserAuthor } from "../helpers/auth";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-function EditCampground({ username }) {
+function EditCampground({ username, handleAlert }) {
   //
   const { id } = useParams();
   const navigate = useNavigate();
@@ -31,45 +31,14 @@ function EditCampground({ username }) {
     images,
     loading,
   } = state;
-  const getAuth = useCallback(async () => {
-    try {
-      fetch("/isUserAuth", {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      })
-        .then(res => res.json())
-        .then(data => (!data.isLoggedIn ? navigate("/login") : null));
-      return;
-    } catch (error) {
-      console.error(error);
-    }
-  }, [navigate]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-
-    getAuth();
-    async function getApi() {
-      try {
-        const response = await axios.get(`/campgrounds/${id}`);
-        const { title, location, price, description, images } = response.data;
-        setState(prevState => ({
-          ...prevState,
-          title,
-          location,
-          price,
-          description,
-          images,
-        }));
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setState(prevState => ({ ...prevState, loading: false }));
-      }
+    // window.scrollTo(0, 0);
+    if (!isAuthenticated()) {
+      handleAlert("Unauthorized. Please login", null);
+      navigate("/campgrounds/" + id);
     }
-    getApi();
-  }, [id, getAuth]);
+  }, [navigate, handleAlert, id]);
 
   /* ==> Config file upload */
   const handleFileInputChange = evt => {
@@ -136,7 +105,7 @@ function EditCampground({ username }) {
     setState(prevState => ({ ...prevState, validated: true }));
   };
 
-  if (loading) return <LoadingSpinner />;
+  // if (loading) return <LoadingSpinner />;
   return (
     <div className="EditCampground row">
       <h1 className="text-center">Edit Campground</h1>

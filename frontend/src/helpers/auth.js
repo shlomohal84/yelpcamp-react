@@ -7,7 +7,7 @@ import {
 
 export const setAuthentication = (token, user) => {
   setCookie("token", token);
-  setLocalStorage("user", user);
+  setLocalStorage("user", { _id: user._id });
 };
 
 export const isAuthenticated = () => {

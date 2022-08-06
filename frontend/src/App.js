@@ -87,18 +87,49 @@ function App() {
           <Route
             index
             element={
-              <Campgrounds {...mainAlert} handleAlert={handleMainAlert} />
+              <Page>
+                <Campgrounds {...mainAlert} handleAlert={handleMainAlert} />
+              </Page>
             }
           />
-          <Route path=":id" element={<CampgroundContent {...routerHooks} />} />
-          <Route path=":id/edit" element={<EditCampground />} />
+          <Route
+            path=":id"
+            element={
+              <Page>
+                <CampgroundContent
+                  {...routerHooks}
+                  handleAlert={handleMainAlert}
+                  {...mainAlert}
+                />
+              </Page>
+            }
+          />
+          <Route
+            path=":id/edit"
+            element={
+              <Page>
+                <EditCampground handleAlert={handleMainAlert} />
+              </Page>
+            }
+          />
           <Route
             path="new"
-            element={<NewCampground handleAlert={handleMainAlert} />}
+            element={
+              <Page>
+                <NewCampground handleAlert={handleMainAlert} />
+              </Page>
+            }
           />
         </Route>
 
-        <Route path="/error404" element={<Error404Page />} />
+        <Route
+          path="/error404"
+          element={
+            <Page>
+              <Error404Page />
+            </Page>
+          }
+        />
         <Route path="*" element={<Navigate replace to="/error404" />} />
       </Routes>
       <Footer {...routerHooks} />
