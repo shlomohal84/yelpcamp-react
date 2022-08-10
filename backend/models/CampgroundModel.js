@@ -6,6 +6,7 @@ const ReviewModel = require("./ReviewModel");
 const ImageSchema = new Schema({
   url: String,
   filename: String,
+  public_id: String,
 });
 
 /* <== Schema for image cloud uploads */

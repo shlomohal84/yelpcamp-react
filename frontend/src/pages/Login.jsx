@@ -80,10 +80,10 @@ function Login({ handleAlert, mainError, mainSuccess }) {
             loading: false,
             errorMessage: err.response.data.errorMessage,
           }));
-          console.log(
-            "login api function error:",
-            err.response.data.errorMessage
-          );
+          // console.log(
+          //   "login api function error:",
+          //   err.response.data.errorMessage
+          // );
         });
     }
   };

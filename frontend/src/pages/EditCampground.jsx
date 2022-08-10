@@ -1,44 +1,60 @@
-// Edit a campground page
+// Create new campground page
 
-import { useState, useEffect, Fragment, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
-import { isAuthenticated, isUserAuthor } from "../helpers/auth";
-import axios from "axios";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { createCampground } from "../api/campgrounds";
+import { isAuthenticated } from "../helpers/auth";
+import isEmpty from "validator/lib/isEmpty";
+import isFloat from "validator/lib/isFloat";
 
-function EditCampground({ username, handleAlert }) {
-  //
-  const { id } = useParams();
+//Component imports
+import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
+// import LoadingSpinner from "../components/LoadingSpinner";
+
+function NewCampground({ handleAlert }) {
   const navigate = useNavigate();
-  const [state, setState] = useState({
+  // const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
     title: "",
     location: "",
     price: "",
     description: "",
     previewSource: "",
-    validated: false,
-    loading: true,
-    images: [],
+    successMessage: null,
+    errorMessage: null,
   });
+
   const {
     title,
     location,
     price,
     description,
     previewSource,
-    validated,
-    images,
-    loading,
-  } = state;
+    errorMessage,
+    successMessage,
+  } = formData;
 
   useEffect(() => {
-    // window.scrollTo(0, 0);
     if (!isAuthenticated()) {
       handleAlert("Unauthorized. Please login", null);
-      navigate("/campgrounds/" + id);
+      navigate("/login");
     }
-  }, [navigate, handleAlert, id]);
+  }, [navigate, handleAlert]);
+
+  const handleInputChange = evt => {
+    if (evt.target.name === "price") {
+      for (let num of evt.target.value) {
+        if (!(num >= 0 || num <= 9 || num === ".")) {
+          return evt.target.value.slice(0, evt.target.value.length - 1);
+        }
+      }
+    }
+    setFormData(prevState => ({
+      ...prevState,
+      [evt.target.name]: evt.target.value,
+    }));
+  };
 
   /* ==> Config file upload */
   const handleFileInputChange = evt => {
@@ -50,7 +66,7 @@ function EditCampground({ username, handleAlert }) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setState(prevState => ({
+      setFormData(prevState => ({
         ...prevState,
         previewSource: reader.result,
       }));
@@ -59,7 +75,7 @@ function EditCampground({ username, handleAlert }) {
 
   const uploadImage = async base64EncodedImage => {
     try {
-      await fetch(`/campgrounds/${id}`, {
+      await fetch("/campgrounds/new", {
         method: "POST",
         body: JSON.stringify({
           data: base64EncodedImage,
@@ -74,47 +90,86 @@ function EditCampground({ username, handleAlert }) {
   };
   /* <== Config file upload */
 
-  const handleInputChange = evt => {
-    setState(prevState => ({
-      ...prevState,
-      [evt.target.name]: evt.target.value,
-    }));
-  };
-
-  const handleSubmit = async evt => {
-    const form = evt.currentTarget;
-    if (form.checkValidity() === false) {
-      evt.preventDefault();
-      evt.stopPropagation();
-      setState(prevState => ({ ...prevState, validated: false }));
+  const handleSubmit = evt => {
+    evt.preventDefault();
+    if (
+      isEmpty(title) ||
+      isEmpty(location) ||
+      isEmpty(price) ||
+      isEmpty(description)
+    ) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "All inputs are required",
+      }));
+    } else if (!isFloat(price)) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "Invalid price value",
+      }));
+    } else if (price <= 0) {
+      setFormData(prevState => ({
+        ...prevState,
+        successMessage: null,
+        errorMessage: "Price input must be larger than 0 ",
+      }));
     } else {
-      evt.preventDefault();
-      if (previewSource) await uploadImage(previewSource);
-      const response = await axios.put(`/campgrounds/${id}`, {
-        campground: {
-          ...state,
-          geometry: {
-            type: "Point",
-          },
-          username: username,
-        },
-      });
-      if (!response.data) return console.error("Can't find a location!");
+      const data = { title, location, price, description, previewSource };
+
+      createCampground(data)
+        .then(response => {
+          handleAlert(null, response.data.successMessage);
+          setFormData(prevState => ({
+            ...prevState,
+            successMessage: null,
+            errorMessage: null,
+          }));
+          navigate("/campgrounds/" + response.data.campgroundId);
+        })
+        .catch(err => {
+          console.log(
+            "createCampground api error:\n",
+            err.response.data.errorMessage
+          );
+          setFormData(prevState => ({
+            ...prevState,
+            successMessage: null,
+            errorMessage: err.response.data.errorMessage,
+          }));
+        });
     }
-    navigate(`/campgrounds/${id}`);
-    setState(prevState => ({ ...prevState, validated: true }));
   };
 
-  // if (loading) return <LoadingSpinner />;
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+
+  //   const getAuth = async () => {
+  //     try {
+  //       fetch("/isUserAuth", {
+  //         headers: {
+  //           "x-access-token": localStorage.getItem("token"),
+  //         },
+  //       })
+  //         .then(res => res.json())
+  //         .then(data => (!data.isLoggedIn ? navigate("/login") : null));
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   getAuth();
+  // }, [navigate]);
+
   return (
-    <div className="EditCampground row">
-      <h1 className="text-center">Edit Campground</h1>
+    <div className="NewCampground row">
+      <h1 className="text-center">New Campground</h1>
+      {errorMessage && <ShowErrorMessage msg={errorMessage} />}
+      {successMessage && <ShowSuccessMessage msg={successMessage} />}
       <div className="col-md-6 col-xl-9 mx-auto">
         <Form
           noValidate
-          validated={validated}
-          action={`/campgrounds/${id}`}
-          method="PUT"
+          method="POST"
           className="needs-validation"
           onSubmit={handleSubmit}
         >
@@ -150,7 +205,7 @@ function EditCampground({ username, handleAlert }) {
                 id="inputGroupPrepend"
                 className="input-group-text"
               >
-                $
+                @
               </InputGroup.Text>
               <FormControl
                 type="text"
@@ -184,36 +239,31 @@ function EditCampground({ username, handleAlert }) {
               className="form-control"
               type="file"
               name="file"
-              // value={file}
               onChange={handleFileInputChange}
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>
           <div className="mb-3">
             <Button type="submit" className="btn btn-success">
-              Apply Changes
+              Add Campground
             </Button>
           </div>
         </Form>
-
-        {images.map((img, idx) => {
-          let url = img.url.replace("/upload", "/upload/w_200");
-          return (
-            <Fragment key={idx}>
-              <div>
-                <button>X</button>
-              </div>
-              <img src={url} alt={img.filename} />
-            </Fragment>
-          );
-        })}
-
-        <footer>
-          <Link to="/campgrounds">Back to All Campgrounds</Link>
-        </footer>
       </div>
+      {previewSource && (
+        <div>
+          <img
+            src={previewSource}
+            alt={previewSource}
+            style={{ height: "150px", width: "150px" }}
+          />
+        </div>
+      )}
+      <footer>
+        <Link to="/campgrounds">Back to All Campgrounds</Link>
+      </footer>
     </div>
   );
 }
 
-export default EditCampground;
+export default NewCampground;

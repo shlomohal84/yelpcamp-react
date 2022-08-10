@@ -1,7 +1,6 @@
 // User authorization and tokens
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require("../config/keys");
-
 exports.authenticateJWT = (req, res, next) => {
   const token = req.cookies.token || req.body.token;
 

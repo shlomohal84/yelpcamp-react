@@ -1,24 +1,31 @@
 // Left column container on single compgraound content
 
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { isAuthenticated, isUserAuthor } from "../helpers/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../helpers/auth";
 import { deleteCampground } from "../api/campgrounds";
-function DetailsCard({ campground, author, user, id }) {
+function DetailsCard({ campground, author, user, id, handleAlert }) {
+  const navigate = useNavigate();
   const [state, setState] = useState(null);
 
   const handleDelete = async evt => {
     evt.preventDefault();
+    if (isAuthenticated()) {
+      const data = { id, author };
+      deleteCampground(data)
+        .then(response => {
+          handleAlert(null, response.data.successMessage);
+          navigate("/campgrounds");
+        })
+        .catch(err => {
+          handleAlert(err.response.data.errorMessage, null);
+          console.log("deleteCampground api error\n", err);
+          // navigate("/campgrounds");
+          window.scrollTo(0, 0);
+        });
+    }
     // if (isUserAuthor(id)) {
-    const data = { id, author };
-    deleteCampground(data)
-      .then(response => {
-        console.log(response.data);
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-      });
+
     // }
 
     //   await axios.delete(`/campgrounds/${campground._id}`);

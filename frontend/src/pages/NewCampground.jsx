@@ -10,7 +10,7 @@ import isFloat from "validator/lib/isFloat";
 
 //Component imports
 import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
-// import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function NewCampground({ handleAlert }) {
   const navigate = useNavigate();
@@ -20,11 +20,11 @@ function NewCampground({ handleAlert }) {
     location: "somewhere",
     price: "59.99",
     description: "efwefwepfew",
-    previewSource: "",
+    previewSource: [],
     successMessage: null,
     errorMessage: null,
+    loading: false,
   });
-
   const {
     title,
     location,
@@ -33,6 +33,7 @@ function NewCampground({ handleAlert }) {
     previewSource,
     errorMessage,
     successMessage,
+    loading,
   } = formData;
 
   useEffect(() => {
@@ -58,8 +59,10 @@ function NewCampground({ handleAlert }) {
 
   /* ==> Config file upload */
   const handleFileInputChange = evt => {
-    const file = evt.target.files[0];
-    previewFile(file);
+    const files = evt.target.files;
+    Object.values(files).forEach(f => {
+      previewFile(f);
+    });
   };
 
   const previewFile = file => {
@@ -68,26 +71,30 @@ function NewCampground({ handleAlert }) {
     reader.onloadend = () => {
       setFormData(prevState => ({
         ...prevState,
-        previewSource: reader.result,
+        previewSource: [...prevState.previewSource, reader.result],
       }));
+      // setFormData(prevState => ({
+      //   ...prevState,
+      //   previewSource: reader.result,
+      // }));
     };
   };
 
-  const uploadImage = async base64EncodedImage => {
-    try {
-      await fetch("/campgrounds/new", {
-        method: "POST",
-        body: JSON.stringify({
-          data: base64EncodedImage,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const uploadImage = async base64EncodedImage => {
+  //   try {
+  //     await fetch("/campgrounds/new", {
+  //       method: "POST",
+  //       body: JSON.stringify({
+  //         data: base64EncodedImage,
+  //       }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   /* <== Config file upload */
 
   const handleSubmit = evt => {
@@ -116,6 +123,8 @@ function NewCampground({ handleAlert }) {
         errorMessage: "Price input must be larger than 0 ",
       }));
     } else {
+      setFormData(prevState => ({ ...prevState, loading: true }));
+
       const data = { title, location, price, description, previewSource };
 
       createCampground(data)
@@ -161,6 +170,7 @@ function NewCampground({ handleAlert }) {
   //   getAuth();
   // }, [navigate]);
 
+  if (loading) return <LoadingSpinner />;
   return (
     <div className="NewCampground row">
       <h1 className="text-center">New Campground</h1>
@@ -240,6 +250,7 @@ function NewCampground({ handleAlert }) {
               type="file"
               name="file"
               onChange={handleFileInputChange}
+              multiple
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>
@@ -250,15 +261,21 @@ function NewCampground({ handleAlert }) {
           </div>
         </Form>
       </div>
-      {previewSource && (
-        <div>
-          <img
-            src={previewSource}
-            alt={previewSource}
-            style={{ height: "150px", width: "150px" }}
-          />
-        </div>
-      )}
+      <div className="row">
+        {previewSource &&
+          Array.isArray(previewSource) &&
+          previewSource.map((s, idx) => {
+            return (
+              <div className="col" key={idx}>
+                <img
+                  src={s}
+                  alt={s}
+                  style={{ height: "150px", width: "150px" }}
+                />
+              </div>
+            );
+          })}
+      </div>
       <footer>
         <Link to="/campgrounds">Back to All Campgrounds</Link>
       </footer>

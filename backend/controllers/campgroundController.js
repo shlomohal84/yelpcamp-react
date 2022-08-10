@@ -1,11 +1,9 @@
 const CampgroundModel = require("../models/campgroundModel");
-const UserModel = require("../models/UserModel");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
 const mongoose = require("mongoose");
 geo.setAccessToken(mapBoxToken);
-const { cloudinary } = require("../utils/cloudinaryAPI");
-const { json } = require("express");
+const cloudinary = require("../utils/cloudinaryAPI");
 
 /* ==> Show all campgrounds */
 module.exports.index = async (req, res) => {
@@ -65,17 +63,21 @@ module.exports.createCampground = async (req, res) => {
           const campground = new CampgroundModel(req.body);
           campground.author = req.user._id;
           campground.geometry = data.features[0].geometry;
-          const fileStr = req.body.previewSource;
-          if (fileStr) {
-            const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
-              folder: `yelpCamp/${campground._id}`,
-              use_filename: true,
-              unique_filename: false,
-            });
-            campground.images.push({
-              url: uploadedResponse.url,
-              filename: uploadedResponse.folder,
-            });
+          const files = req.body.previewSource;
+
+          if (Array.isArray(files)) {
+            for (let file of files) {
+              const uploadedResponse = await cloudinary.uploader.upload(file, {
+                folder: `yelpCamp/${campground._id}`,
+                use_filename: true,
+                unique_filename: false,
+              });
+              campground.images.push({
+                url: uploadedResponse.url,
+                filename: uploadedResponse.folder,
+                public_id: uploadedResponse.public_id,
+              });
+            }
           }
           await campground.save();
           res.status(200).json({
@@ -145,8 +147,11 @@ module.exports.deleteCampground = async (req, res) => {
         .status(401)
         .json({ errorMessage: "Access Denied. User is not author" });
     }
-    console.log("Delete request called");
-    res.status(200).json({ successMessage: "Delete request called" });
+    const publicIds = campground.images.map(img => img.public_id);
+    await cloudinary.api.delete_resources(publicIds);
+
+    await CampgroundModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({ successMessage: "Campground deleted successfully" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ errorMessage: "Server error" });

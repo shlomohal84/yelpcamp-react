@@ -90,6 +90,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
           id={id}
           author={author}
           user={user}
+          handleAlert={handleAlert}
         />
       </div>
       <div className="col-6">
