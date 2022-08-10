@@ -97,7 +97,6 @@ function App() {
             element={
               <Page>
                 <CampgroundContent
-                  {...routerHooks}
                   handleAlert={handleMainAlert}
                   {...mainAlert}
                 />
@@ -108,7 +107,7 @@ function App() {
             path=":id/edit"
             element={
               <Page>
-                <EditCampground handleAlert={handleMainAlert} />
+                <EditCampground {...mainAlert} handleAlert={handleMainAlert} />
               </Page>
             }
           />

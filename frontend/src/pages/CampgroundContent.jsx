@@ -34,6 +34,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
     errorMessage,
     successMessage,
   } = state;
+  // console.log(params);
   const { id } = useParams();
   useEffect(() => {
     const loadCampgroundContent = () => {

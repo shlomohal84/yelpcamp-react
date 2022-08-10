@@ -10,13 +10,14 @@ const {
 } = require("../controllers/CampgroundController");
 const checkDbStatus = require("../middleware/checkDbStatus");
 //
+
 router.route("/").get(index);
 
 router.route("/new").post(authenticateJWT, createCampground);
 router
   .route("/:id")
   .get(campgroundContent)
-  .delete(authenticateJWT, deleteCampground);
-// .put(checkDbStatus, editCampground)
+  .delete(authenticateJWT, deleteCampground)
+  .put(authenticateJWT, editCampground);
 
 module.exports = router;

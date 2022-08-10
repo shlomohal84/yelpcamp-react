@@ -1,46 +1,74 @@
 // Create new campground page
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, FormControl, InputGroup } from "react-bootstrap";
-import { createCampground } from "../api/campgrounds";
+// import { createCampground } from "../api/campgrounds";
+import { getCampgroundContent, editCampground } from "../api/campgrounds";
 import { isAuthenticated } from "../helpers/auth";
 import isEmpty from "validator/lib/isEmpty";
 import isFloat from "validator/lib/isFloat";
 
 //Component imports
 import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
-// import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-function NewCampground({ handleAlert }) {
+function EditCampground({ handleAlert }) {
   const navigate = useNavigate();
   // const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
+    user: JSON.parse(localStorage.getItem("user")),
     title: "",
     location: "",
     price: "",
+    images: [],
     description: "",
-    previewSource: "",
+    previewSource: [],
     successMessage: null,
     errorMessage: null,
+    loading: false,
   });
-
   const {
+    user,
     title,
     location,
     price,
     description,
+    images,
     previewSource,
     errorMessage,
     successMessage,
+    loading,
   } = formData;
 
+  const { id } = useParams();
   useEffect(() => {
     if (!isAuthenticated()) {
       handleAlert("Unauthorized. Please login", null);
       navigate("/login");
     }
-  }, [navigate, handleAlert]);
+    const getAuthorId = () => {
+      const data = { id };
+      getCampgroundContent(data)
+        .then(response => {
+          const { campground } = response.data;
+          if (campground.author._id !== user._id) {
+            handleAlert("Unauthorized. User is not author", null);
+            navigate("/campgrounds/" + id);
+          }
+          setFormData(prevState => ({
+            ...prevState,
+            title: campground.title,
+            location: campground.location,
+            price: campground.price,
+            description: campground.description,
+            images: campground.images,
+          }));
+        })
+        .catch(err => console.log(err));
+    };
+    getAuthorId();
+  }, [navigate, handleAlert, id, user._id]);
 
   const handleInputChange = evt => {
     if (evt.target.name === "price") {
@@ -58,8 +86,10 @@ function NewCampground({ handleAlert }) {
 
   /* ==> Config file upload */
   const handleFileInputChange = evt => {
-    const file = evt.target.files[0];
-    previewFile(file);
+    const files = evt.target.files;
+    Object.values(files).forEach(f => {
+      previewFile(f);
+    });
   };
 
   const previewFile = file => {
@@ -68,78 +98,92 @@ function NewCampground({ handleAlert }) {
     reader.onloadend = () => {
       setFormData(prevState => ({
         ...prevState,
-        previewSource: reader.result,
+        previewSource: [...prevState.previewSource, reader.result],
       }));
+      // setFormData(prevState => ({
+      //   ...prevState,
+      //   previewSource: reader.result,
+      // }));
     };
   };
 
-  const uploadImage = async base64EncodedImage => {
-    try {
-      await fetch("/campgrounds/new", {
-        method: "POST",
-        body: JSON.stringify({
-          data: base64EncodedImage,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const uploadImage = async base64EncodedImage => {
+  //   try {
+  //     await fetch("/campgrounds/new", {
+  //       method: "POST",
+  //       body: JSON.stringify({
+  //         data: base64EncodedImage,
+  //       }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   /* <== Config file upload */
 
   const handleSubmit = evt => {
     evt.preventDefault();
-    if (
-      isEmpty(title) ||
-      isEmpty(location) ||
-      isEmpty(price) ||
-      isEmpty(description)
-    ) {
-      setFormData(prevState => ({
-        ...prevState,
-        successMessage: null,
-        errorMessage: "All inputs are required",
-      }));
-    } else if (!isFloat(price)) {
-      setFormData(prevState => ({
-        ...prevState,
-        successMessage: null,
-        errorMessage: "Invalid price value",
-      }));
-    } else if (price <= 0) {
-      setFormData(prevState => ({
-        ...prevState,
-        successMessage: null,
-        errorMessage: "Price input must be larger than 0 ",
-      }));
-    } else {
-      const data = { title, location, price, description, previewSource };
+    const data = { id, title };
+    editCampground(data)
+      .then(response => {
+        console.log(response.data.successMessage);
+      })
+      .catch(err => {
+        console.log(err.response.data.errorMessage);
+      });
+    // if (
+    //   isEmpty(title) ||
+    //   isEmpty(location) ||
+    //   isEmpty(price) ||
+    //   isEmpty(description)
+    // ) {
+    //   setFormData(prevState => ({
+    //     ...prevState,
+    //     successMessage: null,
+    //     errorMessage: "All inputs are required",
+    //   }));
+    // } else if (!isFloat(price)) {
+    //   setFormData(prevState => ({
+    //     ...prevState,
+    //     successMessage: null,
+    //     errorMessage: "Invalid price value",
+    //   }));
+    // } else if (price <= 0) {
+    //   setFormData(prevState => ({
+    //     ...prevState,
+    //     successMessage: null,
+    //     errorMessage: "Price input must be larger than 0 ",
+    //   }));
+    // } else {
+    //   setFormData(prevState => ({ ...prevState, loading: true }));
 
-      createCampground(data)
-        .then(response => {
-          handleAlert(null, response.data.successMessage);
-          setFormData(prevState => ({
-            ...prevState,
-            successMessage: null,
-            errorMessage: null,
-          }));
-          navigate("/campgrounds/" + response.data.campgroundId);
-        })
-        .catch(err => {
-          console.log(
-            "createCampground api error:\n",
-            err.response.data.errorMessage
-          );
-          setFormData(prevState => ({
-            ...prevState,
-            successMessage: null,
-            errorMessage: err.response.data.errorMessage,
-          }));
-        });
-    }
+    //   const data = { title, location, price, description, previewSource };
+
+    //   createCampground(data)
+    //     .then(response => {
+    //       handleAlert(null, response.data.successMessage);
+    //       setFormData(prevState => ({
+    //         ...prevState,
+    //         successMessage: null,
+    //         errorMessage: null,
+    //       }));
+    //       navigate("/campgrounds/" + response.data.campgroundId);
+    //     })
+    //     .catch(err => {
+    //       console.log(
+    //         "createCampground api error:\n",
+    //         err.response.data.errorMessage
+    //       );
+    //       setFormData(prevState => ({
+    //         ...prevState,
+    //         successMessage: null,
+    //         errorMessage: err.response.data.errorMessage,
+    //       }));
+    //     });
+    // }
   };
 
   // useEffect(() => {
@@ -161,15 +205,16 @@ function NewCampground({ handleAlert }) {
   //   getAuth();
   // }, [navigate]);
 
+  if (loading) return <LoadingSpinner />;
   return (
-    <div className="NewCampground row">
-      <h1 className="text-center">New Campground</h1>
+    <div className="EditCampground row">
+      <h1 className="text-center">Edit Campground</h1>
       {errorMessage && <ShowErrorMessage msg={errorMessage} />}
       {successMessage && <ShowSuccessMessage msg={successMessage} />}
       <div className="col-md-6 col-xl-9 mx-auto">
         <Form
           noValidate
-          method="POST"
+          method="PUT"
           className="needs-validation"
           onSubmit={handleSubmit}
         >
@@ -240,25 +285,52 @@ function NewCampground({ handleAlert }) {
               type="file"
               name="file"
               onChange={handleFileInputChange}
+              multiple
             />
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           </Form.Group>
           <div className="mb-3">
             <Button type="submit" className="btn btn-success">
-              Add Campground
+              Edit Campground
             </Button>
           </div>
         </Form>
       </div>
-      {previewSource && (
-        <div>
-          <img
-            src={previewSource}
-            alt={previewSource}
-            style={{ height: "150px", width: "150px" }}
-          />
-        </div>
-      )}
+      <div className="row justify-content-center">
+        {images &&
+          Array.isArray(images) &&
+          images.map((img, idx) => {
+            return (
+              <div className="col-md-3" key={idx}>
+                <div className="d-flex flex-column">
+                  <div className="mx-auto">
+                    <button
+                      className="btn btn-danger"
+                      onClick={evt => {
+                        const filterImgs = images.filter(
+                          elm => images[idx]._id !== elm._id
+                        );
+                        setFormData(prevState => ({
+                          ...prevState,
+                          images: filterImgs,
+                        }));
+                      }}
+                    >
+                      X
+                    </button>
+                  </div>
+                  <div className="mx-auto">
+                    <img
+                      src={img.url}
+                      alt={img.url}
+                      style={{ height: "150px", width: "150px" }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+      </div>
       <footer>
         <Link to="/campgrounds">Back to All Campgrounds</Link>
       </footer>
@@ -266,4 +338,4 @@ function NewCampground({ handleAlert }) {
   );
 }
 
-export default NewCampground;
+export default EditCampground;

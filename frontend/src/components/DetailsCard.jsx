@@ -11,7 +11,7 @@ function DetailsCard({ campground, author, user, id, handleAlert }) {
   const handleDelete = async evt => {
     evt.preventDefault();
     if (isAuthenticated()) {
-      const data = { id, author };
+      const data = { id, author, campground };
       deleteCampground(data)
         .then(response => {
           handleAlert(null, response.data.successMessage);

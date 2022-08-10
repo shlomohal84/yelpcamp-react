@@ -100,6 +100,16 @@ module.exports.createCampground = async (req, res) => {
 
 /* ==> Edit a campground */
 module.exports.editCampground = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const campground = await CampgroundModel.findById(req.params.id);
+    console.log(userId);
+
+    res.status(200).json({ campground });
+  } catch (err) {
+    res.status(500).json({ errorMessage: "YEEEEEET" });
+  }
+
   // geoDataCoords = geo.geocode(
   //   "mapbox.places",
   //   req.body.campground.location,
@@ -147,8 +157,10 @@ module.exports.deleteCampground = async (req, res) => {
         .status(401)
         .json({ errorMessage: "Access Denied. User is not author" });
     }
-    const publicIds = campground.images.map(img => img.public_id);
-    await cloudinary.api.delete_resources(publicIds);
+    if (campground.images.length) {
+      const publicIds = campground.images.map(img => img.public_id);
+      await cloudinary.api.delete_resources(publicIds);
+    }
 
     await CampgroundModel.findByIdAndDelete(req.params.id);
     res.status(200).json({ successMessage: "Campground deleted successfully" });

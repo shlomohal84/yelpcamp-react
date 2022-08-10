@@ -43,3 +43,13 @@ export const deleteCampground = async data => {
   );
   return response;
 };
+
+export const editCampground = async data => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await axios.put(`/api/campgrounds/${data.id}`, data, config);
+  return response;
+};
