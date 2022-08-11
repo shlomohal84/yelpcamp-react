@@ -82,7 +82,7 @@ module.exports.createCampground = async (req, res) => {
           await campground.save();
           res.status(200).json({
             campgroundId: campground._id,
-            successMessage: "New campground created successfully!",
+            successMessage: "campground created successfully!",
           });
         }
       }
@@ -103,11 +103,73 @@ module.exports.editCampground = async (req, res) => {
   try {
     const userId = req.user._id;
     const campground = await CampgroundModel.findById(req.params.id);
-    console.log(userId);
+    const authorId = campground.author._id.toString();
+    if (!(userId === authorId)) {
+      console.log("Access Denied. User is not author");
+      return res
+        .status(401)
+        .json({ errorMessage: "Access Denied. User is not author" });
+    }
+    geoDataCoords = geo.geocode(
+      // Update mapbox coords with new location
+      "mapbox.places",
+      req.body.location,
+      async (err, data) => {
+        if (err || !data.features[0]) {
+          console.log("Error connecting to mapbox:\n", err);
+          return res
+            .status(400)
+            .json({ errorMessage: "Error connecting to mapbox:\n", err });
+        }
+        if (data) {
+          //update campground doc values
+          campground.geometry = data.features[0].geometry;
+          campground.location = req.body.location;
+          campground.title = req.body.title;
+          campground.price = req.body.price;
+          campground.description = req.body.description;
 
-    res.status(200).json({ campground });
+          const initialImages = campground.images;
+          const deletedImages = req.body.deletedImages;
+          // Remove images from cloud and remove their data from db
+
+          if (deletedImages.length) {
+            const arr = initialImages.filter(elm => {
+              return (
+                elm.public_id !==
+                deletedImages.find(img => img === elm.public_id)
+              );
+            });
+            campground.images = arr;
+            await cloudinary.api.delete_resources(deletedImages);
+          }
+          // Upload images to cloud and add their data to db
+          const files = req.body.previewSource;
+
+          if (Array.isArray(files)) {
+            for (let file of files) {
+              const uploadedResponse = await cloudinary.uploader.upload(file, {
+                folder: `yelpCamp/${campground._id}`,
+                use_filename: true,
+                unique_filename: false,
+              });
+              campground.images.push({
+                url: uploadedResponse.url,
+                filename: uploadedResponse.folder,
+                public_id: uploadedResponse.public_id,
+              });
+            }
+          }
+
+          await campground.save();
+          res.status(200).json({
+            successMessage: "Campground updated successfully",
+          });
+        }
+      }
+    );
   } catch (err) {
-    res.status(500).json({ errorMessage: "YEEEEEET" });
+    res.status(500).json({ errorMessage: "Server Error" });
   }
 
   // geoDataCoords = geo.geocode(

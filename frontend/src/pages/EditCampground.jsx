@@ -21,7 +21,8 @@ function EditCampground({ handleAlert }) {
     title: "",
     location: "",
     price: "",
-    images: [],
+    initialImages: [],
+    deletedImages: [],
     description: "",
     previewSource: [],
     successMessage: null,
@@ -34,7 +35,8 @@ function EditCampground({ handleAlert }) {
     location,
     price,
     description,
-    images,
+    initialImages,
+    deletedImages,
     previewSource,
     errorMessage,
     successMessage,
@@ -53,7 +55,10 @@ function EditCampground({ handleAlert }) {
         .then(response => {
           const { campground } = response.data;
           if (campground.author._id !== user._id) {
-            handleAlert("Unauthorized. User is not author", null);
+            handleAlert(
+              "Unauthorized. User is not this campground author",
+              null
+            );
             navigate("/campgrounds/" + id);
           }
           setFormData(prevState => ({
@@ -62,10 +67,13 @@ function EditCampground({ handleAlert }) {
             location: campground.location,
             price: campground.price,
             description: campground.description,
-            images: campground.images,
+            initialImages: campground.images,
           }));
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.log(err);
+          handleAlert(err.response.data.errorMessage, null);
+        });
     };
     getAuthorId();
   }, [navigate, handleAlert, id, user._id]);
@@ -125,86 +133,55 @@ function EditCampground({ handleAlert }) {
   /* <== Config file upload */
 
   const handleSubmit = evt => {
+    setFormData(prevState => ({ ...prevState, loading: true }));
     evt.preventDefault();
-    const data = { id, title };
+    const data = {
+      id,
+      title,
+      location,
+      price,
+      description,
+      initialImages,
+      deletedImages,
+      previewSource,
+    };
     editCampground(data)
       .then(response => {
         console.log(response.data.successMessage);
+        handleAlert(null, response.data.successMessage);
+        setFormData(prevState => ({
+          ...prevState,
+          loading: false,
+          deletedImages: [],
+        }));
+        navigate("/campgrounds/" + id);
       })
       .catch(err => {
         console.log(err.response.data.errorMessage);
+        setFormData(prevState => ({
+          ...prevState,
+          errorMessage: err.response.data.errorMessage,
+        }));
       });
-    // if (
-    //   isEmpty(title) ||
-    //   isEmpty(location) ||
-    //   isEmpty(price) ||
-    //   isEmpty(description)
-    // ) {
-    //   setFormData(prevState => ({
-    //     ...prevState,
-    //     successMessage: null,
-    //     errorMessage: "All inputs are required",
-    //   }));
-    // } else if (!isFloat(price)) {
-    //   setFormData(prevState => ({
-    //     ...prevState,
-    //     successMessage: null,
-    //     errorMessage: "Invalid price value",
-    //   }));
-    // } else if (price <= 0) {
-    //   setFormData(prevState => ({
-    //     ...prevState,
-    //     successMessage: null,
-    //     errorMessage: "Price input must be larger than 0 ",
-    //   }));
-    // } else {
-    //   setFormData(prevState => ({ ...prevState, loading: true }));
-
-    //   const data = { title, location, price, description, previewSource };
-
-    //   createCampground(data)
-    //     .then(response => {
-    //       handleAlert(null, response.data.successMessage);
-    //       setFormData(prevState => ({
-    //         ...prevState,
-    //         successMessage: null,
-    //         errorMessage: null,
-    //       }));
-    //       navigate("/campgrounds/" + response.data.campgroundId);
-    //     })
-    //     .catch(err => {
-    //       console.log(
-    //         "createCampground api error:\n",
-    //         err.response.data.errorMessage
-    //       );
-    //       setFormData(prevState => ({
-    //         ...prevState,
-    //         successMessage: null,
-    //         errorMessage: err.response.data.errorMessage,
-    //       }));
-    //     });
-    // }
   };
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-
-  //   const getAuth = async () => {
-  //     try {
-  //       fetch("/isUserAuth", {
-  //         headers: {
-  //           "x-access-token": localStorage.getItem("token"),
-  //         },
-  //       })
-  //         .then(res => res.json())
-  //         .then(data => (!data.isLoggedIn ? navigate("/login") : null));
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   getAuth();
-  // }, [navigate]);
-
+  //
+  const handleDeletedImages = (img, idx) => {
+    const filterImgs = initialImages.filter(elm => {
+      if (initialImages[idx]._id === elm._id) {
+        setFormData(prevState => ({
+          ...prevState,
+          deletedImages: [...prevState.deletedImages, elm.public_id],
+        }));
+      }
+      return initialImages[idx]._id !== elm._id;
+    });
+    setFormData(prevState => ({
+      ...prevState,
+      initialImages: filterImgs,
+    }));
+  };
+  //
   if (loading) return <LoadingSpinner />;
   return (
     <div className="EditCampground row">
@@ -297,24 +274,16 @@ function EditCampground({ handleAlert }) {
         </Form>
       </div>
       <div className="row justify-content-center">
-        {images &&
-          Array.isArray(images) &&
-          images.map((img, idx) => {
+        {initialImages &&
+          Array.isArray(initialImages) &&
+          initialImages.map((img, idx) => {
             return (
               <div className="col-md-3" key={idx}>
                 <div className="d-flex flex-column">
                   <div className="mx-auto">
                     <button
                       className="btn btn-danger"
-                      onClick={evt => {
-                        const filterImgs = images.filter(
-                          elm => images[idx]._id !== elm._id
-                        );
-                        setFormData(prevState => ({
-                          ...prevState,
-                          images: filterImgs,
-                        }));
-                      }}
+                      onClick={() => handleDeletedImages(img, idx)}
                     >
                       X
                     </button>
@@ -332,7 +301,7 @@ function EditCampground({ handleAlert }) {
           })}
       </div>
       <footer>
-        <Link to="/campgrounds">Back to All Campgrounds</Link>
+        <Link to={`/campgrounds/${id}`}>Back to Campground</Link>
       </footer>
     </div>
   );
