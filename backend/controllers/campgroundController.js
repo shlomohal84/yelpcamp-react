@@ -172,7 +172,6 @@ module.exports.editCampground = async (req, res) => {
     res.status(500).json({ errorMessage: "Server Error" });
   }
 
-  // geoDataCoords = geo.geocode(
   //   "mapbox.places",
   //   req.body.campground.location,
   //   async (err, data) => {

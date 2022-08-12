@@ -26,3 +26,17 @@ export const addReview = async data => {
   );
   return response;
 };
+export const deleteReview = async data => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await axios.delete(
+    `/api/campgrounds/${data.id}/reviews/${data.reviewId}`,
+    data,
+    config
+  );
+
+  return response;
+};

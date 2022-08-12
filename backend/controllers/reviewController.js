@@ -33,26 +33,31 @@ module.exports.addReview = async (req, res) => {
   } catch (err) {
     res.status(500).json({ errorMessage: "Server error" });
   }
-  // const author = req.body.author;
-  // const campground = await CampgroundModel.findById(req.params.id);
-  // const review = new ReviewModel(req.body.review);
-  // const user = await UserModel.findOne({ username: author });
-  // const userId = user._id;
-  // review.author = userId;
-  // campground.reviews.push(review);
-  // await review.save();
-  // await campground.save();
-  // res.json(review);
 };
 /* <== Add a review */
 
 /* ==> Delete a review */
 module.exports.deleteReview = async (req, res) => {
-  // const { id, reviewId } = req.params;
-  // await CampgroundModel.findByIdAndUpdate(id, {
-  //   $pull: { reviews: reviewId },
-  // });
-  // await ReviewModel.findByIdAndDelete(reviewId);
-  // res.json(await campgroundModel.findById(id));
+  try {
+    const userId = req.user._id;
+    const reviewId = req.params.id;
+    const review = await ReviewModel.findById(reviewId);
+    console.log(review);
+    if (!(userId === (review.author && review.author._id.toString()))) {
+      return res
+        .status(400)
+        .json({ errorMessage: "Unauthorized. User is not review's author" });
+    }
+    await CampgroundModel.findByIdAndUpdate(reviewId, {
+      $pull: {
+        reviews: reviewId,
+      },
+    });
+    await ReviewModel.findByIdAndDelete(reviewId);
+    res.status(200).json({ successMessage: "Review deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errorMessage: "Server error" });
+  }
 };
 /* <== Delete a review */

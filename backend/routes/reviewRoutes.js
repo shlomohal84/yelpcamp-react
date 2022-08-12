@@ -7,10 +7,8 @@ const {
   getReviews,
 } = require("../controllers/ReviewController");
 
-router
-  .route("/")
-  .get(getReviews)
-  .post(authenticateJWT, addReview)
-  .delete(authenticateJWT, deleteReview);
+router.route("/").get(getReviews).post(authenticateJWT, addReview);
+
+router.route("/:id").delete(authenticateJWT, deleteReview);
 
 module.exports = router;
