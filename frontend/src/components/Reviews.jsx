@@ -1,20 +1,46 @@
 // Campground Reviews container
 // on the right column of campground content
 
+import { useCallback } from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { addReview, getReviews } from "../api/reviews";
+import { isAuthenticated } from "../helpers/auth";
 import LoadingSpinner from "./LoadingSpinner";
-
-function Reviews({ reviews }) {
-  const { id } = useParams();
+import { ShowErrorMessage, ShowSuccessMessage } from "./Alerts";
+function Reviews({ id }) {
   const [state, setState] = useState({
+    user: JSON.parse(localStorage.getItem("user")),
+    reviews: [],
+    loading: false,
     rating: 1,
     input: "",
-    reviewId: "",
-    loading: "",
-    rev: null,
+    errorMessage: null,
+    successMessage: null,
   });
-  const { rating, input, reviewId, loading } = state;
+  const {
+    reviews,
+    rating,
+    input,
+    loading,
+    user,
+    errorMessage,
+    successMessage,
+  } = state;
+
+  const fetchReviews = useCallback(() => {
+    const data = { id };
+    getReviews(data)
+      .then(response => {
+        setState(prevState => ({
+          ...prevState,
+          reviews: response.data.reviews,
+        }));
+      })
+      .catch(err => console.log(err.response.data.errorMessage));
+  }, [id]);
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   const handleRating = evt => {
     setState(prevState => ({ ...prevState, rating: Number(evt.target.value) }));
@@ -25,17 +51,32 @@ function Reviews({ reviews }) {
   };
 
   const handleSubmit = async evt => {
-    // evt.preventDefault();
-    // await axios.post(`/campgrounds/${id}/reviews`, {
-    //   author: username,
-    //   review: { rating, body: input },
-    // });
-    // setState(prevState => ({
-    //   ...prevState,
-    //   input: "",
-    //   rating: 1,
-    // }));
-    // getApi();
+    setState(prevState => ({
+      ...prevState,
+      loading: true,
+    }));
+    evt.preventDefault();
+    const data = { id, rating, body: input };
+    addReview(data)
+      .then(
+        response =>
+          setState(prevState => ({
+            ...prevState,
+            loading: false,
+            successMessage: response.data.successMessage,
+            input: "",
+            rating: 1,
+          })),
+        fetchReviews()
+      )
+      .catch(err => {
+        console.log(err.response.data.errorMessage);
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          errorMessage: err.response.data.errorM,
+        }));
+      });
   };
 
   const handleDelete = async evt => {
@@ -44,25 +85,20 @@ function Reviews({ reviews }) {
     // getApi();
   };
 
-  if (loading) return <LoadingSpinner />;
-  return (
-    <>
-      {reviews.map((review, idx) => {
-        return (
-          <div className="card mb-3" key={idx}>
-            <div className="card-body">
-              <h5 className="card-title">Author: {review.author.username}</h5>
-              <p className="starability-result" data-rating={review.rating}>
-                Rated: 3 stars
-              </p>
-              <h6 className="card-subtitle mb-2 text-muted"> </h6>
-              <p className="card-text fst-italic"> {review.body} </p>
+  const renderReviews = () =>
+    reviews.map((review, idx) => {
+      return (
+        <div className="card mb-3" key={idx}>
+          <div className="card-body">
+            <h5 className="card-title">Author: {review.author.username}</h5>
+            <p className="starability-result" data-rating={review.rating}>
+              Rated: ${review.rating} stars
+            </p>
+            <h6 className="card-subtitle mb-2 text-muted"> </h6>
+            <p className="card-text fst-italic"> {review.body} </p>
 
-              <form
-                onSubmit={handleDelete}
-                method="DELETE"
-                action={`/campgrounds/${id}/reviews/${review._id}`}
-              >
+            {isAuthenticated() && user._id === review.author._id && (
+              <form onSubmit={handleDelete}>
                 <button
                   className="btn btn-sm btn-danger"
                   onClick={() =>
@@ -75,10 +111,14 @@ function Reviews({ reviews }) {
                   Delete
                 </button>
               </form>
-            </div>
+            )}
           </div>
-        );
-      })}
+        </div>
+      );
+    });
+
+  const renderAddReviewForm = () =>
+    isAuthenticated() && (
       <div className="container mt-5 mb-3">
         <h3 className="mt-0 mb-1 text-center">Leave a review</h3>
         <form
@@ -171,6 +211,17 @@ function Reviews({ reviews }) {
           </div>
         </form>
       </div>
+    );
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <>
+      {errorMessage && <ShowErrorMessage msg={errorMessage} />}
+      {successMessage && <ShowSuccessMessage msg={successMessage} />}
+      {renderReviews()}
+      {successMessage}
+      {renderAddReviewForm()}
     </>
   );
 }

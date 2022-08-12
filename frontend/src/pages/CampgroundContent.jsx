@@ -18,7 +18,6 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
     author: {},
     coordinates: [0, 0],
     images: [],
-    reviews: [],
     loading: false,
     errorMessage: null,
     successMessage: null,
@@ -29,7 +28,6 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
     author,
     coordinates,
     images,
-    reviews,
     // loading,
     errorMessage,
     successMessage,
@@ -48,7 +46,6 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
             coordinates: response.data.campground.geometry.coordinates,
             campground: response.data.campground,
             images: response.data.campground.images,
-            reviews: response.data.campground.reviews,
             loading: false,
             successMessage: response.data.successMessage,
             errorMessage: null,
@@ -96,7 +93,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
       </div>
       <div className="col-6">
         <MapBox zoom={11} coordinates={coordinates} />
-        <Reviews reviews={reviews} />
+        <Reviews id={id} />
       </div>
     </div>
   );
