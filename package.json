@@ -2,7 +2,13 @@
   "name": "yelpcamp",
   "version": "1.0.0",
   "main": "app.js",
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x"
+  },
   "scripts": {
+    "heroku-prebuild": "echo This runs before Heroku installs dependencies.",
+    "heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies.",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build",
     "start": "nodemon backend/server.js",
     "server": "nodemon backend/server.js",
@@ -15,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mapbox/mapbox-sdk": "^0.13.3",
+    "@mapbox/mapbox-sdk": "^0.13.4",
     "bcrypt": "^5.0.1",
     "cloudinary": "^1.29.0",
     "colors": "^1.4.0",
