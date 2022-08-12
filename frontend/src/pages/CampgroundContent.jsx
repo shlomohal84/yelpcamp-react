@@ -81,7 +81,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
       {successMessage && (
         <ShowSuccessMessage msg={successMessage} handleAlert={handleAlert} />
       )}
-      <div className="col-6">
+      <div className="col-md-6">
         <CampgroundCarousel images={images} />
         <DetailsCard
           campground={campground}
@@ -91,9 +91,11 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
           handleAlert={handleAlert}
         />
       </div>
-      <div className="col-6">
+      <div className="col-md-6">
         <MapBox zoom={11} coordinates={coordinates} />
-        <Reviews id={id} />
+        <div>
+          <Reviews id={id} />
+        </div>
       </div>
     </div>
   );
