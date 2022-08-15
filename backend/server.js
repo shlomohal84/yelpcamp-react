@@ -8,8 +8,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./database/db");
-const CampgroundRoutes = require("./routes/CampgroundRoutes");
-const ReviewRoutes = require("./routes/ReviewRoutes");
+const CampgroundRoutes = require("./routes/campgroundRoutes");
+const ReviewRoutes = require("./routes/reviewRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { ExpressError } = require("./utils/ExpressError");
 
