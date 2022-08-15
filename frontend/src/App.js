@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Routes,
   Route,
@@ -43,13 +43,16 @@ function App() {
     mainSuccess: null,
   });
 
-  const handleMainAlert = (error, success) => {
-    setMainAlert(prevState => ({
-      ...prevState,
-      mainError: error,
-      mainSuccess: success,
-    }));
-  };
+  const handleMainAlert = useCallback(
+    () => (error, success) => {
+      setMainAlert(prevState => ({
+        ...prevState,
+        mainError: error,
+        mainSuccess: success,
+      }));
+    },
+    [setMainAlert]
+  );
   /* Hooks ==> */
 
   /* <== Functions */

@@ -9,11 +9,14 @@ const {
   deleteCampground,
 } = require("../controllers/campgroundController");
 const checkDbStatus = require("../middleware/checkDbStatus");
+const { validateCampground } = require("../middleware/validationSchemas");
 //
 
 router.route("/").get(index);
 
-router.route("/new").post(authenticateJWT, createCampground);
+router
+  .route("/new")
+  .post(authenticateJWT, validateCampground, createCampground);
 router
   .route("/:id")
   .get(campgroundContent)

@@ -2,28 +2,38 @@ import Map, { Marker } from "react-map-gl";
 
 import "./component_styles/MapBox.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useState } from "react";
 
-function MapBox({ coordinates, zoom }) {
+function MapBox({ coordinates }) {
   // const coordinates = geometry && geometry.coordinates;
   const lng = coordinates[0];
   const lat = coordinates[1];
   const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
+
+  const [viewState, setViewState] = useState({
+    zoom: 11,
+  });
+  const handleZoom = evt => {
+    setViewState(evt.viewState);
+  };
+
   return (
     <>
       <Map
         longitude={lng}
         latitude={lat}
-        zoom={zoom}
+        zoom={viewState.zoom}
+        onMove={handleZoom}
         mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxAccessToken={MAPBOX_TOKEN}
-        boxZoom={false}
-        scrollZoom={false}
+        // boxZoom={true}
+        // scrollZoom={true}
         dragPan={false}
-        doubleClickZoom={false}
-        // id="map"
-        // className="mapboxgl-map"
+        // doubleClickZoom={true}
+        id="map"
+        className="mapboxgl-map"
       >
-        <Marker longitude={lng} latitude={lat} zoom={zoom && zoom}></Marker>
+        <Marker longitude={lng} latitude={lat} /*  zoom={zoom} */></Marker>
       </Map>
     </>
   );

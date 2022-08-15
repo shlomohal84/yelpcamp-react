@@ -13,6 +13,7 @@ const ReviewRoutes = require("./routes/reviewRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { ExpressError } = require("./utils/ExpressError");
 const path = require("path");
+const mongoSanitize = require("express-mongo-sanitize");
 
 //This will create a middleware.
 //When you navigate to the root page, it would use the built react-app
@@ -24,6 +25,7 @@ app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+app.use(mongoSanitize());
 app.use("/api/auth", authRoutes);
 app.use("/api/campgrounds", CampgroundRoutes);
 app.use("/api/campgrounds/:id/reviews", ReviewRoutes);

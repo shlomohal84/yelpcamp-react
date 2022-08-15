@@ -96,7 +96,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
         />
       </div>
       <div className="col-md-6">
-        <MapBox zoom={11} coordinates={coordinates} />
+        <MapBox /* zoom={11} */ coordinates={coordinates} />
         <div>
           <Reviews id={id} loadCampgroundContent={loadCampgroundContent} />
         </div>
