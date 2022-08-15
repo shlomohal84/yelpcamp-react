@@ -10,6 +10,7 @@ import DetailsCard from "../components/DetailsCard";
 import Reviews from "../components/Reviews";
 import MapBox from "../components/MapBox";
 import { ShowErrorMessage, ShowSuccessMessage } from "../components/Alerts";
+import { useCallback } from "react";
 // import LoadingSpinner from "../components/LoadingSpinner";
 function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
   const [state, setState] = useState({
@@ -33,39 +34,42 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
     successMessage,
   } = state;
   // console.log(params);
+
   const { id } = useParams();
-  useEffect(() => {
-    const loadCampgroundContent = () => {
-      const data = { id };
-      getCampgroundContent(data)
-        .then(response => {
-          // console.log(response.data);
-          setState(prevState => ({
-            ...prevState,
-            author: response.data.campground.author,
-            coordinates: response.data.campground.geometry.coordinates,
-            campground: response.data.campground,
-            images: response.data.campground.images,
-            loading: false,
-            successMessage: response.data.successMessage,
-            errorMessage: null,
-          }));
-        })
-        .catch(err => {
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            errorMessage: err.response.data.errorMessage,
-            successMessage: null,
-          }));
-          console.log(
-            "Campgrounds list loading error:\n",
-            err.response.data.errorMessage
-          );
-        });
-    };
-    loadCampgroundContent();
+
+  const loadCampgroundContent = useCallback(() => {
+    const data = { id };
+    getCampgroundContent(data)
+      .then(response => {
+        // console.log(response.data);
+        setState(prevState => ({
+          ...prevState,
+          author: response.data.campground.author,
+          coordinates: response.data.campground.geometry.coordinates,
+          campground: response.data.campground,
+          images: response.data.campground.images,
+          loading: false,
+          successMessage: response.data.successMessage,
+          errorMessage: null,
+        }));
+      })
+      .catch(err => {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          errorMessage: err.response.data.errorMessage,
+          successMessage: null,
+        }));
+        console.log(
+          "Campgrounds list loading error:\n",
+          err.response.data.errorMessage
+        );
+      });
   }, [id]);
+
+  useEffect(() => {
+    loadCampgroundContent();
+  }, [id, loadCampgroundContent]);
 
   return (
     <div className="row">
@@ -94,7 +98,7 @@ function CampgroundContent({ mainError, mainSuccess, handleAlert }) {
       <div className="col-md-6">
         <MapBox zoom={11} coordinates={coordinates} />
         <div>
-          <Reviews id={id} />
+          <Reviews id={id} loadCampgroundContent={loadCampgroundContent} />
         </div>
       </div>
     </div>

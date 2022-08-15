@@ -7,7 +7,7 @@ import { addReview, getReviews, deleteReview } from "../api/reviews";
 import { isAuthenticated } from "../helpers/auth";
 import LoadingSpinner from "./LoadingSpinner";
 import { ShowErrorMessage, ShowSuccessMessage } from "./Alerts";
-function Reviews({ id }) {
+function Reviews({ id, loadCampgroundContent }) {
   const [state, setState] = useState({
     user: JSON.parse(localStorage.getItem("user")),
     reviews: [],
@@ -76,6 +76,7 @@ function Reviews({ id }) {
           errorMessage: err.response.data.errorMessage,
         }));
       });
+    loadCampgroundContent();
     fetchReviews();
   };
 
