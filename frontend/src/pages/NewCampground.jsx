@@ -16,10 +16,10 @@ function NewCampground({ handleAlert }) {
   const navigate = useNavigate();
   // const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    title: "something",
-    location: "somewhere",
-    price: "59.99",
-    description: "efwefwepfew",
+    title: "",
+    location: "",
+    price: "",
+    description: "",
     previewSource: [],
     successMessage: null,
     errorMessage: null,

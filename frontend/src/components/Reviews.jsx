@@ -38,6 +38,7 @@ function Reviews({ id }) {
       })
       .catch(err => console.log(err.response.data.errorMessage));
   }, [id]);
+
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
@@ -58,16 +59,14 @@ function Reviews({ id }) {
     }));
     const data = { id, rating, body: input };
     addReview(data)
-      .then(
-        response =>
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            successMessage: response.data.successMessage,
-            input: "",
-            rating: 1,
-          })),
-        fetchReviews()
+      .then(response =>
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          successMessage: response.data.successMessage,
+          input: "",
+          rating: 1,
+        }))
       )
       .catch(err => {
         console.log(err.response.data.errorMessage);
@@ -77,6 +76,7 @@ function Reviews({ id }) {
           errorMessage: err.response.data.errorMessage,
         }));
       });
+    fetchReviews();
   };
 
   const handleDeleteReview = reviewId => {
@@ -84,7 +84,6 @@ function Reviews({ id }) {
     const data = { id, reviewId };
     deleteReview(data)
       .then(response => {
-        console.log(response);
         setState(prevState => ({
           ...prevState,
           loading: false,
