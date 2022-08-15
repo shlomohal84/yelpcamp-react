@@ -59,15 +59,16 @@ function Reviews({ id, loadCampgroundContent }) {
     }));
     const data = { id, rating, body: input };
     addReview(data)
-      .then(response =>
+      .then(response => {
         setState(prevState => ({
           ...prevState,
           loading: false,
           successMessage: response.data.successMessage,
           input: "",
           rating: 1,
-        }))
-      )
+        }));
+        fetchReviews();
+      })
       .catch(err => {
         console.log(err.response.data.errorMessage);
         setState(prevState => ({
@@ -76,8 +77,6 @@ function Reviews({ id, loadCampgroundContent }) {
           errorMessage: err.response.data.errorMessage,
         }));
       });
-    loadCampgroundContent();
-    fetchReviews();
   };
 
   const handleDeleteReview = reviewId => {
