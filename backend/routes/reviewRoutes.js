@@ -5,7 +5,7 @@ const {
   addReview,
   deleteReview,
   getReviews,
-} = require("../controllers/ReviewController");
+} = require("../controllers/reviewController");
 
 router.route("/").get(getReviews).post(authenticateJWT, addReview);
 

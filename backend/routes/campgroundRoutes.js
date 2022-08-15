@@ -7,7 +7,7 @@ const {
   campgroundContent,
   editCampground,
   deleteCampground,
-} = require("../controllers/CampgroundController");
+} = require("../controllers/campgroundController");
 const checkDbStatus = require("../middleware/checkDbStatus");
 //
 
