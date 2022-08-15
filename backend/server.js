@@ -12,11 +12,11 @@ const CampgroundRoutes = require("./routes/campgroundRoutes");
 const ReviewRoutes = require("./routes/reviewRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { ExpressError } = require("./utils/ExpressError");
-const path = require("path");
+// const path = require("path");
 
 //This will create a middleware.
 //When you navigate to the root page, it would use the built react-app
-app.use(express.static(path.resolve(__dirname, "./frontend/build")));
+// app.use(express.static(path.resolve(__dirname, "./frontend/build")));
 
 app.use(cors());
 app.use(morgan("dev"));
