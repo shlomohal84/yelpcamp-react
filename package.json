@@ -9,9 +9,9 @@
   "scripts": {
     "heroku-prebuild": "echo This runs before Heroku installs dependencies.",
     "heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies.",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build",
-    "start": "nodemon backend/server.js",
-    "server": "nodemon backend/server.js",
+    "heroku-postbuild": "cd frontend && npm install npm && run build",
+    "start": "node backend/server.js",
+    "server": "node backend/server.js",
     "client": "npm start --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
