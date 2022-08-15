@@ -9,7 +9,7 @@
   "scripts": {
     "heroku-prebuild": "echo This runs before Heroku installs dependencies.",
     "heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies.",
-    "heroku-postbuild": "cd frontend && npm install npm && run build",
+    "heroku-postbuild": "cd frontend && npm install && npm run build",
     "start": "node backend/server.js",
     "server": "node backend/server.js",
     "client": "npm start --prefix frontend",

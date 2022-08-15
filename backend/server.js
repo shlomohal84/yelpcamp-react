@@ -13,6 +13,10 @@ const ReviewRoutes = require("./routes/ReviewRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { ExpressError } = require("./utils/ExpressError");
 
+//This will create a middleware.
+//When you navigate to the root page, it would use the built react-app
+app.use(express.static(path.resolve(__dirname, "./frontend/build")));
+
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));
