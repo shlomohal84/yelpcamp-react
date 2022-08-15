@@ -1,4 +1,4 @@
-const CampgroundModel = require("../models/campgroundModel");
+const CampgroundModel = require("../models/CampgroundModel");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geo = require("mapbox-geocoding");
 const mongoose = require("mongoose");
