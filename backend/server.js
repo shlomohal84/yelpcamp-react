@@ -44,7 +44,8 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "frontend", "build", "index.html"));
 });
 
-app.listen(port, () =>
-  console.log(`>> Server loaded successfully on port ${port}`)
+connectDB().then(
+  app.listen(port, () =>
+    console.log(`>> Server loaded successfully on port ${port}`)
+  )
 );
-connectDB();
